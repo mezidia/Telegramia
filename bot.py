@@ -3,6 +3,7 @@ import logging
 from aiogram import Bot, Dispatcher, executor, types
 
 from config import TELEGRAM_TOKEN
+from filters import IsPlayer
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -11,8 +12,11 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TELEGRAM_TOKEN)
 dp = Dispatcher(bot)
 
+# Activate filters
+dp.filters_factory.bind(IsPlayer, event_handlers=[dp.message_handlers])
 
-@dp.message_handler(commands=['start', 'help'])
+
+@dp.message_handler(is_player=True, commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     """
     This handler will be called when user sends `/start` or `/help` command
