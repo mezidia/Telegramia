@@ -2,8 +2,9 @@ import logging
 
 from aiogram import Bot, Dispatcher, executor, types
 
-from config import TELEGRAM_TOKEN
+from config import TELEGRAM_TOKEN, DB_PASSWORD
 from filters import IsPlayer
+from database import Client
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -22,6 +23,24 @@ async def send_welcome(message: types.Message):
     This handler will be called when user sends `/start` or `/help` command
     """
     await message.reply("Hi!\nI'm EchoBot!\nPowered by aiogram.")
+
+
+@dp.message_handler(commands=['create'])
+async def create_player_handler(message: types.Message):
+    photo_url = 'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_intro.jpg'
+    text = 'Вітаємо у магічному світі *Telegramia*. Цей світ повен пригод, цікавих людей, підступних ворогів, ' \
+           'великих держав і ще багато чого іншого...Скоріше починай свою подорож. Для початку обери країну, ' \
+           'у яку відправишся, щоб підкорювати цей світ'
+    client = Client(DB_PASSWORD, 'Telegramia', 'countries')
+    counties = client.get({})
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn1 = types.KeyboardButton('Пріаріа')
+    btn2 = types.KeyboardButton('Естіл')
+    btn3 = types.KeyboardButton('Браудал')
+    btn4 = types.KeyboardButton('Асмон')
+    btn5 = types.KeyboardButton('Пліора')
+    markup.add()
+    await message.answer_photo(photo_url, text, parse_mode='Markdown')
 
 
 @dp.message_handler()
