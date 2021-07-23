@@ -39,6 +39,16 @@ class Client:
         except Exception as e:
             print('Error:', e)
 
+    def get_all(self) -> list:
+        """
+        Method for getting all data from collection
+        :return: the list of documents
+        """
+        try:
+            return self.collection.find({})
+        except Exception as e:
+            print('Error:', e)
+
     def update(self, query: dict, data: dict) -> results.UpdateResult:
         """
         Method for updating data in collection

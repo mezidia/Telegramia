@@ -26,6 +26,10 @@ class TestClient2(TestCase, Parent):
         self.assertIsInstance(result, dict)
         self.assertEqual(result['test_id'], self.full_data['test_id'])
 
+    def test_get_all(self):
+        result = self.client.get_all()
+        self.assertIsNotNone(result)
+
     def test_update(self):
         result = self.client.update({'test_token': 'test_token' + sys.version}, {'test_token': 'test_token1' +
                                                                                                sys.version})
