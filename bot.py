@@ -32,15 +32,14 @@ async def create_player_handler(message: types.Message):
            'великих держав і ще багато чого іншого...Скоріше починай свою подорож. Для початку обери країну, ' \
            'у яку відправишся, щоб підкорювати цей світ'
     client = Client(DB_PASSWORD, 'Telegramia', 'countries')
-    counties = client.get({})
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    btn1 = types.KeyboardButton('Пріаріа')
-    btn2 = types.KeyboardButton('Естіл')
-    btn3 = types.KeyboardButton('Браудал')
-    btn4 = types.KeyboardButton('Асмон')
-    btn5 = types.KeyboardButton('Пліора')
-    markup.add()
-    await message.answer_photo(photo_url, text, parse_mode='Markdown')
+    countries = client.get_all()
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    buttons = []
+    for country in countries:
+        btn = types.KeyboardButton(country['name'])
+        buttons.append(btn)
+    markup.add(*buttons)
+    await message.answer_photo(photo_url, text, parse_mode='Markdown', reply_markup=markup)
 
 
 @dp.message_handler()
