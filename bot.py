@@ -1,6 +1,10 @@
 import logging
 
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.dispatcher.filters.state import StatesGroup, State
+from aiogram.dispatcher.filters import Text
+from aiogram.dispatcher import FSMContext
 
 from config import TELEGRAM_TOKEN, DB_PASSWORD
 from filters import IsPlayer
@@ -11,10 +15,43 @@ logging.basicConfig(level=logging.INFO)
 
 # Initialize bot and dispatcher
 bot = Bot(token=TELEGRAM_TOKEN)
-dp = Dispatcher(bot)
+storage = MemoryStorage()
+dp = Dispatcher(bot, storage=storage)
 
 # Activate filters
 dp.filters_factory.bind(IsPlayer, event_handlers=[dp.message_handlers])
+
+
+# States
+class Player(StatesGroup):
+    user_id = State()
+    name = State()
+    level = State()
+    experience = State()
+    health = State()
+    mana = State()
+    strength = State()
+    agility = State()
+    intuition = State()
+    hero_class = State()
+    nation = State()
+    money = State()
+    items = State()
+    mount = State()
+
+
+# Use state '*' if I need to handle all states
+@dp.message_handler(state='*', commands='cancel')
+@dp.message_handler(Text(equals='cancel', ignore_case=True), state='*')
+async def cancel_handler(message: types.Message, state: FSMContext) -> types.Message:
+    """
+    Allow user to cancel any action
+    """
+    current_state = await state.get_state()
+    if current_state is None:
+        return await message.reply('Процес реєстрації не починався.')
+    await state.finish()
+    return await message.reply('Реєстрація зупинена.')
 
 
 @dp.message_handler(is_player=True, commands=['start', 'help'])
@@ -39,7 +76,31 @@ async def create_player_handler(message: types.Message):
         btn = types.KeyboardButton(country['name'])
         buttons.append(btn)
     markup.add(*buttons)
+    await Player.nation.set()
     await message.answer_photo(photo_url, text, parse_mode='Markdown', reply_markup=markup)
+
+
+@dp.message_handler(state=Player.nation)
+async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> types.Message:
+    nation = message.text
+    user_id = message.from_user.id
+    await state.update_data({'nation': nation})
+    await state.update_data({'user_id': user_id})
+    await state.update_data({'level': 1.})
+    await state.update_data({'experience': 0.})
+    await state.update_data({'money': 100.})
+    await state.update_data({'items': []})
+    await state.update_data({'mount': {}})
+    await Player.name.set()
+    return await message.answer('Напиши, як тебе звати')
+
+
+@dp.message_handler(state=Player.name)
+async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> types.Message:
+    name = message.text
+    await state.update_data({'name': name})
+    await Player.hero_class.set()
+    return await message.answer('Обери свій клас')
 
 
 @dp.message_handler()
