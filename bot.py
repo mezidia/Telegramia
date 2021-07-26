@@ -38,6 +38,7 @@ class Player(StatesGroup):
     money = State()
     items = State()
     mount = State()
+    current_state = State()
 
 
 # Use state '*' if I need to handle all states
@@ -84,6 +85,8 @@ async def create_player_handler(message: types.Message):
 async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> types.Message:
     nation = message.text
     user_id = message.from_user.id
+    client = Client(DB_PASSWORD, 'Telegramia', 'countries')
+    country = client.get({'name': nation})
     await state.update_data({'nation': nation})
     await state.update_data({'user_id': user_id})
     await state.update_data({'level': 1.})
@@ -91,6 +94,7 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
     await state.update_data({'money': 100.})
     await state.update_data({'items': []})
     await state.update_data({'mount': {}})
+    await state.update_data({'current_state': country['capital']})
     await Player.name.set()
     return await message.answer('Напиши, як тебе звати')
 
