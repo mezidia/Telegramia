@@ -41,6 +41,18 @@ class Player(StatesGroup):
     current_state = State()
 
 
+async def create_keyboard(collection_name: str, field_name: str):
+    client = Client(DB_PASSWORD, 'Telegramia', collection_name)
+    objects = client.get_all()
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    buttons = []
+    for object_ in objects:
+        btn = types.KeyboardButton(object_[field_name])
+        buttons.append(btn)
+    markup.add(*buttons)
+    return markup
+
+
 # Use state '*' if I need to handle all states
 @dp.message_handler(state='*', commands='cancel')
 @dp.message_handler(Text(equals='cancel', ignore_case=True), state='*')
@@ -69,14 +81,7 @@ async def create_player_handler(message: types.Message):
     text = 'Вітаємо у магічному світі *Telegramia*. Цей світ повен пригод, цікавих людей, підступних ворогів, ' \
            'великих держав і ще багато чого іншого...Скоріше починай свою подорож. Для початку обери країну, ' \
            'у яку відправишся, щоб підкорювати цей світ'
-    client = Client(DB_PASSWORD, 'Telegramia', 'countries')
-    countries = client.get_all()
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    buttons = []
-    for country in countries:
-        btn = types.KeyboardButton(country['name'])
-        buttons.append(btn)
-    markup.add(*buttons)
+    markup = await create_keyboard('countries', 'name')
     await Player.nation.set()
     await message.answer_photo(photo_url, text, parse_mode='Markdown', reply_markup=markup)
 
@@ -103,8 +108,9 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
 async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> types.Message:
     name = message.text
     await state.update_data({'name': name})
+    markup = await create_keyboard('classes', 'name')
     await Player.hero_class.set()
-    return await message.answer('Обери свій клас')
+    return await message.answer('Обери свій клас', reply_markup=markup)
 
 
 @dp.message_handler()
