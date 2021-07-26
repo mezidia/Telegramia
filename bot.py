@@ -29,10 +29,11 @@ class Player(StatesGroup):
     level = State()
     experience = State()
     health = State()
-    mana = State()
+    energy = State()
     strength = State()
     agility = State()
     intuition = State()
+    intelligence = State()
     hero_class = State()
     nation = State()
     money = State()
@@ -51,6 +52,18 @@ async def create_keyboard(collection_name: str, field_name: str):
         buttons.append(btn)
     markup.add(*buttons)
     return markup
+
+
+async def prepare_player_info(data):
+    items = ''
+    for item in data['items']:
+        items += f'{item}, '
+    text = f'Ігрове ім\'я: *{data["name"]}*\n🎖Рівень: *{data["level"]}*\n🌟Досвід: *{data["experience"]}*\n❤Здоров\'я: ' \
+           f'*{data["health"]}*\nЕнергія: *{data["energy"]}*\n\n💪Сила: *{data["strength"]}*\n⚡Спритність: *{data["agility"]}*\n' \
+           f'🎯Інтуїція: *{data["intuition"]}*\n🎓Інтелект: *{data["intelligence"]}*\n💟Клас: *{data["hero_class"]}*\n\n' \
+           f'🤝Нація: *{data["nation"]}*\n💰Гроші: *{data["money"]}*\n🎒Речі: *{items}*\n🐺Транспорт: *{data["mount"]}*\n' \
+           f'\nПоточне місце: *{data["current_state"]}*'
+    return text
 
 
 # Use state '*' if I need to handle all states
@@ -99,6 +112,8 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
     await state.update_data({'money': 100.})
     await state.update_data({'items': []})
     await state.update_data({'mount': {}})
+    await state.update_data({'health': 100.})
+    await state.update_data({'energy': 60.})
     await state.update_data({'current_state': country['capital']})
     await Player.name.set()
     return await message.answer('Напиши, як тебе звати')
@@ -111,6 +126,21 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
     markup = await create_keyboard('classes', 'name')
     await Player.hero_class.set()
     return await message.answer('Обери свій клас', reply_markup=markup)
+
+
+@dp.message_handler(state=Player.hero_class)
+async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> types.Message:
+    class_name = message.text
+    await state.update_data({'hero_class': class_name})
+    client = Client(DB_PASSWORD, 'Telegramia', 'classes')
+    class_ = client.get({'name': class_name})
+    await state.update_data({'strength': class_['characteristics']['strength']})
+    await state.update_data({'agility': class_['characteristics']['agility']})
+    await state.update_data({'intuition': class_['characteristics']['intuition']})
+    await state.update_data({'intelligence': class_['characteristics']['intelligence']})
+    data = await state.get_data()
+    text = await prepare_player_info(data)
+    return await message.answer(text, parse_mode='Markdown')
 
 
 @dp.message_handler()
