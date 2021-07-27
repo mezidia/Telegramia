@@ -55,13 +55,16 @@ async def create_keyboard(collection_name: str, field_name: str):
 
 
 async def prepare_player_info(data):
-    items = ''
-    for item in data['items']:
-        items += f'{item}, '
+    items = 'пусто'
+    if data['items']:
+        items = ''
+        for item in data['items']:
+            items += f'{item}, '
     text = f'Ігрове ім\'я: *{data["name"]}*\n🎖Рівень: *{data["level"]}*\n🌟Досвід: *{data["experience"]}*\n❤Здоров\'я: ' \
            f'*{data["health"]}*\nЕнергія: *{data["energy"]}*\n\n💪Сила: *{data["strength"]}*\n⚡Спритність: *{data["agility"]}*\n' \
            f'🎯Інтуїція: *{data["intuition"]}*\n🎓Інтелект: *{data["intelligence"]}*\n💟Клас: *{data["hero_class"]}*\n\n' \
-           f'🤝Нація: *{data["nation"]}*\n💰Гроші: *{data["money"]}*\n🎒Речі: *{items}*\n🐺Транспорт: *{data["mount"]}*\n' \
+           f'🤝Нація: *{data["nation"]}*\n💰Гроші: *{data["money"]}*\n🎒Речі: *{items}*\n' \
+           f'🐺Транспорт: *{data["mount"]["name"] if data["mount"]["name"] else "немає"}*\n' \
            f'\nПоточне місце: *{data["current_state"]}*'
     return text
 
@@ -111,7 +114,7 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
     await state.update_data({'experience': 0.})
     await state.update_data({'money': 100.})
     await state.update_data({'items': []})
-    await state.update_data({'mount': {}})
+    await state.update_data({'mount': {'name': ''}})
     await state.update_data({'health': 100.})
     await state.update_data({'energy': 60.})
     await state.update_data({'current_state': country['capital']})
