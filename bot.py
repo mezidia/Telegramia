@@ -25,6 +25,7 @@ dp.filters_factory.bind(IsPlayer, event_handlers=[dp.message_handlers])
 # States
 class Player(StatesGroup):
     user_id = State()
+    telegram_name = State()
     name = State()
     level = State()
     experience = State()
@@ -69,6 +70,18 @@ async def prepare_player_info(data):
     return text
 
 
+@dp.callback_query_handler(lambda c: c.data)
+async def process_callback(callback_query: types.CallbackQuery):
+    user_id = callback_query.from_user.id
+    if callback_query.data == 'No':
+        client = Client(DB_PASSWORD, 'Telegramia', 'players')
+        client.delete({'user_id': user_id})
+        await Player.nation.set()
+        markup = await create_keyboard('countries', 'name')
+        return await bot.send_message(callback_query.from_user.id, 'Оберіть країну', reply_markup=markup)
+    return await bot.answer_callback_query(callback_query.id, 'hello')
+
+
 # Use state '*' if I need to handle all states
 @dp.message_handler(state='*', commands='cancel')
 @dp.message_handler(Text(equals='cancel', ignore_case=True), state='*')
@@ -106,10 +119,12 @@ async def create_player_handler(message: types.Message):
 async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> types.Message:
     nation = message.text
     user_id = message.from_user.id
+    telegram_name = message.from_user.username
     client = Client(DB_PASSWORD, 'Telegramia', 'countries')
     country = client.get({'name': nation})
     await state.update_data({'nation': nation})
     await state.update_data({'user_id': user_id})
+    await state.update_data({'telegram_name': telegram_name})
     await state.update_data({'level': 1.})
     await state.update_data({'experience': 0.})
     await state.update_data({'money': 100.})
@@ -142,8 +157,15 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
     await state.update_data({'intuition': class_['characteristics']['intuition']})
     await state.update_data({'intelligence': class_['characteristics']['intelligence']})
     data = await state.get_data()
+    await state.finish()
     text = await prepare_player_info(data)
-    return await message.answer(text, parse_mode='Markdown')
+    client = Client(DB_PASSWORD, 'Telegramia', 'players')
+    client.insert(data)
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    markup.add(types.InlineKeyboardButton('Так', callback_data='Yes'),
+               types.InlineKeyboardButton('Ні', callback_data='No'))
+    await message.answer(text, parse_mode='Markdown')
+    return await message.answer('Вас задовільняє ваш персонаж?', reply_markup=markup)
 
 
 @dp.message_handler()
