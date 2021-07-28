@@ -21,6 +21,29 @@ dp = Dispatcher(bot, storage=storage)
 # Activate filters
 dp.filters_factory.bind(IsPlayer, event_handlers=[dp.message_handlers])
 
+city_objects = [
+    {
+        'name': 'market',
+        'urk_name': 'Ринок'
+    },
+    {
+        'name': 'academy',
+        'urk_name': 'Ринок'
+    },
+    {
+        'name': 'temple',
+        'urk_name': 'Храм'
+    },
+    {
+        'name': 'tavern',
+        'urk_name': 'Таверна'
+    },
+    {
+        'name': 'menagerie',
+        'urk_name': 'Стойло'
+    },
+]
+
 
 # States
 class Player(StatesGroup):
@@ -70,16 +93,30 @@ async def prepare_player_info(data):
     return text
 
 
+async def show_city_info(city_name: str, chat_id: str):
+    photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{city_name}.jpg'
+    client = Client(DB_PASSWORD, 'Telegramia', 'cities')
+    city = client.get({'name': city_name})
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    for object in city_objects:
+        if city[object['name']]:
+            button = types.KeyboardButton(object['ukr_name'])
+            markup.add(button)
+    await bot.send_photo(chat_id, photo_url, f'Ви знаходитесь у місті {city_name}', reply_markup=markup)
+
+
 @dp.callback_query_handler(lambda c: c.data)
 async def process_callback(callback_query: types.CallbackQuery):
     user_id = callback_query.from_user.id
+    client = Client(DB_PASSWORD, 'Telegramia', 'players')
     if callback_query.data == 'No':
-        client = Client(DB_PASSWORD, 'Telegramia', 'players')
         client.delete({'user_id': user_id})
         await Player.nation.set()
         markup = await create_keyboard('countries', 'name')
         return await bot.send_message(callback_query.from_user.id, 'Оберіть країну', reply_markup=markup)
-    return await bot.answer_callback_query(callback_query.id, 'hello')
+    else:
+        city_name = client.get({'user_id': user_id})['current_state']
+        await show_city_info(city_name, callback_query.from_user.id)
 
 
 # Use state '*' if I need to handle all states
