@@ -97,11 +97,12 @@ async def show_city_info(city_name: str, chat_id: str):
     photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{city_name}.jpg'
     client = Client(DB_PASSWORD, 'Telegramia', 'cities')
     city = client.get({'name': city_name})
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    for object in city_objects:
-        if city[object['name']]:
-            button = types.KeyboardButton(object['ukr_name'])
-            markup.add(button)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
+    buttons = []
+    for city_object in city_objects:
+        if city[city_object['name']]:
+            buttons.append(types.KeyboardButton(city_object['ukr_name']))
+    markup.add(*buttons)
     await bot.send_photo(chat_id, photo_url, f'Ви знаходитесь у місті {city_name}', reply_markup=markup)
 
 
