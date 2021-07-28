@@ -144,6 +144,10 @@ async def send_welcome(message: types.Message):
 
 @dp.message_handler(commands=['create'])
 async def create_player_handler(message: types.Message):
+    client = Client(DB_PASSWORD, 'Telegramia', 'players')
+    user_id = message.from_user.id
+    if client.get({'user_id': user_id}) is not None:
+        return await message.reply('Ви вже зареєстровані')
     photo_url = 'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_intro.jpg'
     text = 'Вітаємо у магічному світі *Telegramia*. Цей світ повен пригод, цікавих людей, підступних ворогів, ' \
            'великих держав і ще багато чого іншого...Скоріше починай свою подорож. Для початку обери країну, ' \
