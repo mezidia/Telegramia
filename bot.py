@@ -24,23 +24,23 @@ dp.filters_factory.bind(IsPlayer, event_handlers=[dp.message_handlers])
 city_objects = [
     {
         'name': 'market',
-        'urk_name': 'Ринок'
+        'ukr_name': 'Ринок'
     },
     {
         'name': 'academy',
-        'urk_name': 'Ринок'
+        'ukr_name': 'Ринок'
     },
     {
         'name': 'temple',
-        'urk_name': 'Храм'
+        'ukr_name': 'Храм'
     },
     {
         'name': 'tavern',
-        'urk_name': 'Таверна'
+        'ukr_name': 'Таверна'
     },
     {
         'name': 'menagerie',
-        'urk_name': 'Стойло'
+        'ukr_name': 'Стойло'
     },
 ]
 
