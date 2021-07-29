@@ -175,6 +175,7 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
     await state.update_data({'health': 100.})
     await state.update_data({'energy': 60.})
     await state.update_data({'current_state': country['capital']})
+    await message.answer(country['description'])
     await Player.name.set()
     return await message.answer('Напиши, як тебе звати')
 
