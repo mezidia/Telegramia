@@ -28,7 +28,7 @@ city_objects = [
     },
     {
         'name': 'academy',
-        'ukr_name': 'Ринок'
+        'ukr_name': 'Академія'
     },
     {
         'name': 'temple',
@@ -41,6 +41,10 @@ city_objects = [
     {
         'name': 'menagerie',
         'ukr_name': 'Стойло'
+    },
+    {
+        'name': 'roads',
+        'ukr_name': 'Дороги'
     },
 ]
 
@@ -97,11 +101,12 @@ async def show_city_info(city_name: str, chat_id: str):
     photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{city_name}.jpg'
     client = Client(DB_PASSWORD, 'Telegramia', 'cities')
     city = client.get({'name': city_name})
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=3)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False, row_width=3)
     buttons = []
     for city_object in city_objects:
         if city[city_object['name']]:
             buttons.append(types.KeyboardButton(city_object['ukr_name']))
+    buttons.append(types.KeyboardButton('Дороги'))
     markup.add(*buttons)
     await bot.send_photo(chat_id, photo_url, f'Ви знаходитесь у місті {city_name}', reply_markup=markup)
 
@@ -213,10 +218,9 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
 
 @dp.message_handler()
 async def echo(message: types.Message):
-    # old style:
-    # await bot.send_message(message.chat.id, message.text)
-
-    await message.answer(message.text)
+    for city_object in city_objects:
+        if city_object['ukr_name'] == message.text:
+            await message.answer(city_object['name'])
 
 
 if __name__ == '__main__':
