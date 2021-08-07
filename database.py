@@ -39,13 +39,15 @@ class Client:
         except Exception as e:
             print('Error:', e)
 
-    def get_all(self) -> list:
+    def get_all(self, query=None) -> list:
         """
         Method for getting all data from collection
         :return: the list of documents
         """
+        if query is None:
+            query = {}
         try:
-            return self.collection.find({})
+            return self.collection.find(query)
         except Exception as e:
             print('Error:', e)
 
