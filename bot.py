@@ -104,8 +104,11 @@ async def show_city_info(city_name: str, chat_id: str):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False, row_width=3)
     buttons = []
     for city_object in city_objects:
-        if city[city_object['name']]:
-            buttons.append(types.KeyboardButton(city_object['ukr_name']))
+        try:
+            if city[city_object['name']]:
+                buttons.append(types.KeyboardButton(city_object['ukr_name']))
+        except KeyError:
+            pass
     buttons.append(types.KeyboardButton('Дороги'))
     markup.add(*buttons)
     await bot.send_photo(chat_id, photo_url, f'Ви знаходитесь у місті {city_name}', reply_markup=markup)
@@ -139,12 +142,13 @@ async def cancel_handler(message: types.Message, state: FSMContext) -> types.Mes
     return await message.reply('Реєстрація зупинена.')
 
 
-@dp.message_handler(is_player=True, commands=['start', 'help'])
-async def send_welcome(message: types.Message):
-    """
-    This handler will be called when user sends `/start` or `/help` command
-    """
-    await message.reply("Hi!\nI'm EchoBot!\nPowered by aiogram.")
+@dp.message_handler(is_player=True, commands=['where'])
+async def send_place_info(message: types.Message):
+    user_id = message.from_user.id
+    chat_id = message.chat.id
+    client = Client(DB_PASSWORD, 'Telegramia', 'players')
+    city_name = client.get({'user_id': user_id})['current_state']
+    await show_city_info(city_name, chat_id)
 
 
 @dp.message_handler(commands=['create'])
