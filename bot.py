@@ -22,8 +22,14 @@ dp = Dispatcher(bot, storage=storage)
 dp.filters_factory.bind(IsPlayer, event_handlers=[dp.message_handlers])
 
 
-def show_roads(player_info: dict):
-    print(player_info['current_state'])
+async def show_roads(player_info: dict, message: types.Message):
+    client = Client(DB_PASSWORD, 'Telegramia', 'roads')
+    roads = client.get_all({'from_obj': player_info['current_state']})
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    for road in roads:
+        markup.add(types.KeyboardButton(f'{road["from_obj"]}-{road["to_obj"]}'))
+    await message.answer('Оберіть місце, куди хочете відправитись', reply_markup=markup)
+
 
 
 city_objects = [
@@ -233,7 +239,7 @@ async def echo(message: types.Message):
     player = client.get({'user_id': user_id})
     for city_object in city_objects:
         if city_object['ukr_name'] == message.text:
-            city_object['function'](player)
+            await city_object['function'](player, message)
 
 
 if __name__ == '__main__':
