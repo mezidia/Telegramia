@@ -21,6 +21,11 @@ dp = Dispatcher(bot, storage=storage)
 # Activate filters
 dp.filters_factory.bind(IsPlayer, event_handlers=[dp.message_handlers])
 
+
+def show_roads(player_info: dict):
+    print(player_info['current_state'])
+
+
 city_objects = [
     {
         'name': 'market',
@@ -44,7 +49,8 @@ city_objects = [
     },
     {
         'name': 'roads',
-        'ukr_name': 'Дороги'
+        'ukr_name': 'Дороги',
+        'function': show_roads
     },
 ]
 
@@ -222,9 +228,12 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
 
 @dp.message_handler()
 async def echo(message: types.Message):
+    client = Client(DB_PASSWORD, 'Telegramia', 'players')
+    user_id = message.from_user.id
+    player = client.get({'user_id': user_id})
     for city_object in city_objects:
         if city_object['ukr_name'] == message.text:
-            await message.answer(city_object['name'])
+            city_object['function'](player)
 
 
 if __name__ == '__main__':
