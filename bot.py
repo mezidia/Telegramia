@@ -32,11 +32,22 @@ async def show_roads(player_info: dict, message: types.Message):
     await message.answer('Оберіть місце, куди хочете відправитись', reply_markup=markup)
 
 
+async def show_items(player_info: dict, message: types.Message):
+    client = Client(DB_PASSWORD, 'Telegramia', 'items')
+    items = client.get_all({'city': player_info['current_state']})
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    for item in items:
+        markup.add(types.KeyboardButton(f'Купити {item["name"]} за {item["price"]}'))
+    markup.add(types.KeyboardButton('Назад'))
+    await message.answer('Оберіть предмет, який хочете купити', reply_markup=markup)
+
+
 
 city_objects = [
     {
         'name': 'market',
-        'ukr_name': 'Ринок'
+        'ukr_name': 'Ринок',
+        'function': show_items
     },
     {
         'name': 'academy',
@@ -241,7 +252,7 @@ async def echo(message: types.Message):
     player = client.get({'user_id': user_id})
     if message.text == 'Назад':
         await show_city_info(player['current_state'], chat_id)
-        return 
+        return
     for city_object in city_objects:
         if city_object['ukr_name'] == message.text:
             await city_object['function'](player, message)
