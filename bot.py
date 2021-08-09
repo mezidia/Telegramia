@@ -28,6 +28,7 @@ async def show_roads(player_info: dict, message: types.Message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     for road in roads:
         markup.add(types.KeyboardButton(f'{road["from_obj"]}-{road["to_obj"]}'))
+    markup.add(types.KeyboardButton('Назад'))
     await message.answer('Оберіть місце, куди хочете відправитись', reply_markup=markup)
 
 
@@ -236,7 +237,11 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
 async def echo(message: types.Message):
     client = Client(DB_PASSWORD, 'Telegramia', 'players')
     user_id = message.from_user.id
+    chat_id = message.chat.id
     player = client.get({'user_id': user_id})
+    if message.text == 'Назад':
+        await show_city_info(player['current_state'], chat_id)
+        return 
     for city_object in city_objects:
         if city_object['ukr_name'] == message.text:
             await city_object['function'](player, message)
