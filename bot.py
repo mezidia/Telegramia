@@ -32,15 +32,26 @@ async def show_roads(player_info: dict, message: types.Message):
     await message.answer('Оберіть місце, куди хочете відправитись', reply_markup=markup)
 
 
-async def show_items(player_info: dict, message: types.Message):
-    client = Client(DB_PASSWORD, 'Telegramia', 'items')
-    items = client.get_all({'city': player_info['current_state']})
+async def create_markup_for_shop(items: list):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     for item in items:
         markup.add(types.KeyboardButton(f'Купити {item["name"]} за {item["price"]}'))
     markup.add(types.KeyboardButton('Назад'))
+    return markup
+
+
+async def show_items(player_info: dict, message: types.Message):
+    client = Client(DB_PASSWORD, 'Telegramia', 'items')
+    items = client.get_all({'city': player_info['current_state']})
+    markup = await create_markup_for_shop(items)
     await message.answer('Оберіть предмет, який хочете купити', reply_markup=markup)
 
+
+async def show_horses(player_info: dict, message: types.Message):
+    client = Client(DB_PASSWORD, 'Telegramia', 'horses')
+    horses = client.get_all({'city': player_info['current_state']})
+    markup = await create_markup_for_shop(horses)
+    await message.answer('Оберіть предмет, який хочете купити', reply_markup=markup)
 
 
 city_objects = [
@@ -63,7 +74,8 @@ city_objects = [
     },
     {
         'name': 'menagerie',
-        'ukr_name': 'Стойло'
+        'ukr_name': 'Стойло',
+        'function': show_horses
     },
     {
         'name': 'roads',
