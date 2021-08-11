@@ -81,6 +81,13 @@ async def enter_temple(player_info: dict, message: types.Message):
                          reply_markup=markup)
 
 
+async def enter_tavern(player_info: dict, message: types.Message):
+    markup = await create_recover_markup('energy')
+    await message.answer(f'Ви знаходитесь у таверні міста {player_info["current_state"]}'
+                         f' і у вас {player_info["energy"]} енергії. Ви хочете відновити її?',
+                         reply_markup=markup)
+
+
 city_objects = [
     {
         'name': 'market',
@@ -99,7 +106,8 @@ city_objects = [
     },
     {
         'name': 'tavern',
-        'ukr_name': 'Таверна'
+        'ukr_name': 'Таверна',
+        'function': enter_tavern
     },
     {
         'name': 'menagerie',
