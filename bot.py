@@ -40,6 +40,19 @@ async def create_markup_for_shop(items: list):
     return markup
 
 
+async def create_recover_markup(characteristic: str):
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton(text=f'Отримати 5 одиниць {characteristic} за 5 монет',
+                                          callback_data=f'5{characteristic}5'))
+    markup.add(types.InlineKeyboardButton(text=f'Отримати 15 одиниць {characteristic} за 13 монет',
+                                          callback_data=f'10{characteristic}13'))
+    markup.add(types.InlineKeyboardButton(text=f'Отримати 50 одиниць {characteristic} за 45 монет',
+                                          callback_data=f'50{characteristic}45'))
+    markup.add(types.InlineKeyboardButton(text='Назад',
+                                          callback_data='back'))
+    return markup
+
+
 async def show_items(player_info: dict, message: types.Message):
     client = Client(DB_PASSWORD, 'Telegramia', 'items')
     items = client.get_all({'city': player_info['current_state']})
@@ -54,6 +67,13 @@ async def show_horses(player_info: dict, message: types.Message):
     await message.answer('Оберіть предмет, який хочете купити', reply_markup=markup)
 
 
+async def enter_academy(player_info: dict, message: types.Message):
+    markup = await create_recover_markup('intelligence')
+    await message.answer(f'Ви знаходитесь в академії міста {player_info["current_state"]}'
+                         f' і у вас {player_info["intelligence"]} інтелекту. Ви хочете провести навчання в академії?',
+                         reply_markup=markup)
+
+
 city_objects = [
     {
         'name': 'market',
@@ -62,7 +82,8 @@ city_objects = [
     },
     {
         'name': 'academy',
-        'ukr_name': 'Академія'
+        'ukr_name': 'Академія',
+        'function': enter_academy
     },
     {
         'name': 'temple',
