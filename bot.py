@@ -74,6 +74,13 @@ async def enter_academy(player_info: dict, message: types.Message):
                          reply_markup=markup)
 
 
+async def enter_temple(player_info: dict, message: types.Message):
+    markup = await create_recover_markup('health')
+    await message.answer(f'Ви знаходитесь у храмі міста {player_info["current_state"]}'
+                         f' і у вас {player_info["health"]} здоров\'я. Ви хочете відновити його?',
+                         reply_markup=markup)
+
+
 city_objects = [
     {
         'name': 'market',
@@ -87,7 +94,8 @@ city_objects = [
     },
     {
         'name': 'temple',
-        'ukr_name': 'Храм'
+        'ukr_name': 'Храм',
+        'function': enter_temple
     },
     {
         'name': 'tavern',
