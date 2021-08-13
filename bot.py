@@ -121,6 +121,8 @@ city_objects = [
     },
 ]
 
+characteristics = ['energy', 'health', 'intelligence']
+
 
 # States
 class Player(StatesGroup):
@@ -191,14 +193,24 @@ async def show_city_info(city_name: str, chat_id: str):
 async def process_callback(callback_query: types.CallbackQuery):
     user_id = callback_query.from_user.id
     client = Client(DB_PASSWORD, 'Telegramia', 'players')
-    if callback_query.data == 'No':
+    callback_data = callback_query.data
+    for characteristic in characteristics:
+        if characteristic in callback_data:
+            value, price = callback_data.split(characteristic)
+            player = client.get({'user_id': user_id})
+            # TODO: write filter function for players money and characteristics
+            client.update({'user_id': user_id}, {characteristic: player[characteristic] + value,
+                                                 'money': player['money'] - price})
+            city_name = client.get({'user_id': user_id})['current_state']
+            return await show_city_info(city_name, callback_query.from_user.id)
+    if callback_data == 'No':
         client.delete({'user_id': user_id})
         await Player.nation.set()
         markup = await create_keyboard('countries', 'name')
         return await bot.send_message(callback_query.from_user.id, 'Оберіть країну', reply_markup=markup)
     else:
         city_name = client.get({'user_id': user_id})['current_state']
-        await show_city_info(city_name, callback_query.from_user.id)
+        return await show_city_info(city_name, callback_query.from_user.id)
 
 
 # Use state '*' if I need to handle all states
