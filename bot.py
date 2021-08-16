@@ -1,3 +1,5 @@
+# TODO: write logics for raids and dungeons
+
 import logging
 
 from aiogram import Bot, Dispatcher, executor, types
