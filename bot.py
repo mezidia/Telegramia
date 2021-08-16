@@ -227,30 +227,6 @@ async def cancel_handler(message: types.Message, state: FSMContext) -> types.Mes
     return await message.reply('Реєстрація зупинена.')
 
 
-@dp.message_handler(is_player=True, commands=['where'])
-async def send_place_info(message: types.Message):
-    user_id = message.from_user.id
-    chat_id = message.chat.id
-    client = Client(DB_PASSWORD, 'Telegramia', 'players')
-    city_name = client.get({'user_id': user_id})['current_state']
-    await show_city_info(city_name, chat_id)
-
-
-@dp.message_handler(commands=['create'])
-async def create_player_handler(message: types.Message):
-    client = Client(DB_PASSWORD, 'Telegramia', 'players')
-    user_id = message.from_user.id
-    if client.get({'user_id': user_id}) is not None:
-        return await message.reply('Ви вже зареєстровані')
-    photo_url = 'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_intro.jpg'
-    text = 'Вітаємо у магічному світі *Telegramia*. Цей світ повен пригод, цікавих людей, підступних ворогів, ' \
-           'великих держав і ще багато чого іншого...Скоріше починай свою подорож. Для початку обери країну, ' \
-           'у яку відправишся, щоб підкорювати цей світ'
-    markup = await create_keyboard('countries', 'name')
-    await Player.nation.set()
-    await message.answer_photo(photo_url, text, parse_mode='Markdown', reply_markup=markup)
-
-
 @dp.message_handler(state=Player.nation)
 async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> types.Message:
     nation = message.text
@@ -303,6 +279,39 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
                types.InlineKeyboardButton('Ні', callback_data='No'))
     await message.answer(text, parse_mode='Markdown')
     return await message.answer('Вас задовільняє ваш персонаж?', reply_markup=markup)
+
+
+@dp.message_handler(commands=['create'])
+async def create_player_handler(message: types.Message):
+    client = Client(DB_PASSWORD, 'Telegramia', 'players')
+    user_id = message.from_user.id
+    if client.get({'user_id': user_id}) is not None:
+        return await message.reply('Ви вже зареєстровані')
+    photo_url = 'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_intro.jpg'
+    text = 'Вітаємо у магічному світі *Telegramia*. Цей світ повен пригод, цікавих людей, підступних ворогів, ' \
+           'великих держав і ще багато чого іншого...Скоріше починай свою подорож. Для початку обери країну, ' \
+           'у яку відправишся, щоб підкорювати цей світ'
+    markup = await create_keyboard('countries', 'name')
+    await Player.nation.set()
+    await message.answer_photo(photo_url, text, parse_mode='Markdown', reply_markup=markup)
+
+
+@dp.message_handler(is_player=True, commands=['where'])
+async def send_place_info(message: types.Message):
+    user_id = message.from_user.id
+    chat_id = message.chat.id
+    client = Client(DB_PASSWORD, 'Telegramia', 'players')
+    city_name = client.get({'user_id': user_id})['current_state']
+    await show_city_info(city_name, chat_id)
+
+
+@dp.message_handler(is_player=True, commands=['me'])
+async def show_player_handler(message: types.Message):
+    client = Client(DB_PASSWORD, 'Telegramia', 'players')
+    user_id = message.from_user.id
+    player = client.get({'user_id': user_id})
+    text = await prepare_player_info(player)
+    await message.answer(text, parse_mode='Markdown')
 
 
 @dp.message_handler()
