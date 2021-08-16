@@ -199,8 +199,8 @@ async def process_callback(callback_query: types.CallbackQuery):
             value, price = callback_data.split(characteristic)
             player = client.get({'user_id': user_id})
             # TODO: write filter function for players money and characteristics
-            client.update({'user_id': user_id}, {characteristic: player[characteristic] + value,
-                                                 'money': player['money'] - price})
+            client.update({'user_id': user_id}, {characteristic: player[characteristic] + float(value),
+                                                 'money': player['money'] - float(price)})
             city_name = client.get({'user_id': user_id})['current_state']
             return await show_city_info(city_name, callback_query.from_user.id)
     if callback_data == 'No':
@@ -311,6 +311,7 @@ async def echo(message: types.Message):
     user_id = message.from_user.id
     chat_id = message.chat.id
     player = client.get({'user_id': user_id})
+    # TODO: handle buying items and roads
     if message.text == 'Назад':
         await show_city_info(player['current_state'], chat_id)
         return
