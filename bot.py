@@ -26,7 +26,7 @@ dp.filters_factory.bind(IsPlayer, event_handlers=[dp.message_handlers])
 
 async def show_roads(player_info: dict, message: types.Message):
     client = Client(DB_PASSWORD, 'Telegramia', 'roads')
-    roads = client.get_all({'from_obj': player_info['current_state']})
+    roads = await client.get_all({'from_obj': player_info['current_state']})
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     for road in roads:
         markup.add(types.KeyboardButton(f'{road["from_obj"]}-{road["to_obj"]}'))
@@ -57,14 +57,14 @@ async def create_recover_markup(characteristic: str):
 
 async def show_items(player_info: dict, message: types.Message):
     client = Client(DB_PASSWORD, 'Telegramia', 'items')
-    items = client.get_all({'city': player_info['current_state']})
+    items = await client.get_all({'city': player_info['current_state']})
     markup = await create_markup_for_shop(items)
     await message.answer('Оберіть предмет, який хочете купити', reply_markup=markup)
 
 
 async def show_horses(player_info: dict, message: types.Message):
     client = Client(DB_PASSWORD, 'Telegramia', 'horses')
-    horses = client.get_all({'city': player_info['current_state']})
+    horses = await client.get_all({'city': player_info['current_state']})
     markup = await create_markup_for_shop(horses)
     await message.answer('Оберіть предмет, який хочете купити', reply_markup=markup)
 
@@ -203,16 +203,16 @@ async def process_callback(callback_query: types.CallbackQuery):
             # TODO: write filter function for players money and characteristics
             await client.update({'user_id': user_id}, {characteristic: player[characteristic] + float(value),
                                                        'money': player['money'] - float(price)})
-            city_name = await client.get({'user_id': user_id})['current_state']
-            return await show_city_info(city_name, callback_query.from_user.id)
+            city_name = await client.get({'user_id': user_id})
+            return await show_city_info(city_name['current_state'], callback_query.from_user.id)
     if callback_data == 'No':
         await client.delete({'user_id': user_id})
         await Player.nation.set()
         markup = await create_keyboard('countries', 'name')
         return await bot.send_message(callback_query.from_user.id, 'Оберіть країну', reply_markup=markup)
     else:
-        city_name = await client.get({'user_id': user_id})['current_state']
-        return await show_city_info(city_name, callback_query.from_user.id)
+        city_name = await client.get({'user_id': user_id})
+        return await show_city_info(city_name['current_state'], callback_query.from_user.id)
 
 
 # Use state '*' if I need to handle all states
@@ -303,8 +303,8 @@ async def send_place_info(message: types.Message):
     user_id = message.from_user.id
     chat_id = message.chat.id
     client = Client(DB_PASSWORD, 'Telegramia', 'players')
-    city_name = await client.get({'user_id': user_id})['current_state']
-    await show_city_info(city_name, chat_id)
+    city_name = await client.get({'user_id': user_id})
+    await show_city_info(city_name['current_state'], chat_id)
 
 
 @dp.message_handler(is_player=True, commands=['me'])
