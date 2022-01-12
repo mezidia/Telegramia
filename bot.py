@@ -149,7 +149,7 @@ class Player(StatesGroup):
 
 async def create_keyboard(collection_name: str, field_name: str):
     client = Client(DB_PASSWORD, 'Telegramia', collection_name)
-    objects = client.get_all()
+    objects = await client.get_all()
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     buttons = []
     for object_ in objects:
@@ -177,7 +177,7 @@ async def prepare_player_info(data):
 async def show_city_info(city_name: str, chat_id: str):
     photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{city_name}.jpg'
     client = Client(DB_PASSWORD, 'Telegramia', 'cities')
-    city = client.get({'name': city_name})
+    city = await client.get({'name': city_name})
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False, row_width=3)
     buttons = []
     for city_object in city_objects:
@@ -199,19 +199,19 @@ async def process_callback(callback_query: types.CallbackQuery):
     for characteristic in characteristics:
         if characteristic in callback_data:
             value, price = callback_data.split(characteristic)
-            player = client.get({'user_id': user_id})
+            player = await client.get({'user_id': user_id})
             # TODO: write filter function for players money and characteristics
-            client.update({'user_id': user_id}, {characteristic: player[characteristic] + float(value),
-                                                 'money': player['money'] - float(price)})
-            city_name = client.get({'user_id': user_id})['current_state']
+            await client.update({'user_id': user_id}, {characteristic: player[characteristic] + float(value),
+                                                       'money': player['money'] - float(price)})
+            city_name = await client.get({'user_id': user_id})['current_state']
             return await show_city_info(city_name, callback_query.from_user.id)
     if callback_data == 'No':
-        client.delete({'user_id': user_id})
+        await client.delete({'user_id': user_id})
         await Player.nation.set()
         markup = await create_keyboard('countries', 'name')
         return await bot.send_message(callback_query.from_user.id, 'Оберіть країну', reply_markup=markup)
     else:
-        city_name = client.get({'user_id': user_id})['current_state']
+        city_name = await client.get({'user_id': user_id})['current_state']
         return await show_city_info(city_name, callback_query.from_user.id)
 
 
@@ -235,7 +235,7 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
     user_id = message.from_user.id
     telegram_name = message.from_user.username
     client = Client(DB_PASSWORD, 'Telegramia', 'countries')
-    country = client.get({'name': nation})
+    country = await client.get({'name': nation})
     await state.update_data({'nation': nation})
     await state.update_data({'user_id': user_id})
     await state.update_data({'telegram_name': telegram_name})
@@ -266,7 +266,7 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
     class_name = message.text
     await state.update_data({'hero_class': class_name})
     client = Client(DB_PASSWORD, 'Telegramia', 'classes')
-    class_ = client.get({'name': class_name})
+    class_ = await client.get({'name': class_name})
     await state.update_data({'strength': class_['characteristics']['strength']})
     await state.update_data({'agility': class_['characteristics']['agility']})
     await state.update_data({'intuition': class_['characteristics']['intuition']})
@@ -275,7 +275,7 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
     await state.finish()
     text = await prepare_player_info(data)
     client = Client(DB_PASSWORD, 'Telegramia', 'players')
-    client.insert(data)
+    await client.insert(data)
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(types.InlineKeyboardButton('Так', callback_data='Yes'),
                types.InlineKeyboardButton('Ні', callback_data='No'))
@@ -287,7 +287,7 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
 async def create_player_handler(message: types.Message):
     client = Client(DB_PASSWORD, 'Telegramia', 'players')
     user_id = message.from_user.id
-    if client.get({'user_id': user_id}) is not None:
+    if await client.get({'user_id': user_id}) is not None:
         return await message.reply('Ви вже зареєстровані')
     photo_url = 'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_intro.jpg'
     text = 'Вітаємо у магічному світі *Telegramia*. Цей світ повен пригод, цікавих людей, підступних ворогів, ' \
@@ -303,7 +303,7 @@ async def send_place_info(message: types.Message):
     user_id = message.from_user.id
     chat_id = message.chat.id
     client = Client(DB_PASSWORD, 'Telegramia', 'players')
-    city_name = client.get({'user_id': user_id})['current_state']
+    city_name = await client.get({'user_id': user_id})['current_state']
     await show_city_info(city_name, chat_id)
 
 
@@ -311,7 +311,7 @@ async def send_place_info(message: types.Message):
 async def show_player_handler(message: types.Message):
     client = Client(DB_PASSWORD, 'Telegramia', 'players')
     user_id = message.from_user.id
-    player = client.get({'user_id': user_id})
+    player = await client.get({'user_id': user_id})
     text = await prepare_player_info(player)
     await message.answer(text, parse_mode='Markdown')
 
@@ -321,7 +321,7 @@ async def echo(message: types.Message):
     client = Client(DB_PASSWORD, 'Telegramia', 'players')
     user_id = message.from_user.id
     chat_id = message.chat.id
-    player = client.get({'user_id': user_id})
+    player = await client.get({'user_id': user_id})
     # TODO: handle buying items and roads
     if message.text == 'Назад':
         await show_city_info(player['current_state'], chat_id)
