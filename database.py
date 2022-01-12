@@ -1,10 +1,12 @@
-from pymongo import MongoClient, results
+from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import results
 
 
 class Client:
     """
     Class for manipulating MongoDB cluster
     """
+
     def __init__(self, password, db_name: str, collection_name: str):
         """
         Initializing client object with access to database
@@ -12,8 +14,8 @@ class Client:
         :param db_name: name of database in current cluster
         :param collection_name: name of collection in current database
         """
-        cluster = MongoClient(f'mongodb+srv://mezgoodle:{password}@telegramia.jkq5x.mongodb.net/'
-                              f'telegramia?retryWrites=true&w=majority')
+        cluster = AsyncIOMotorClient(f'mongodb+srv://mezgoodle:{password}@telegramia.jkq5x.mongodb.net/'
+                                     f'telegramia?retryWrites=true&w=majority')
         db = cluster[db_name]
         self.collection = db[collection_name]
 
@@ -39,7 +41,7 @@ class Client:
         except Exception as e:
             print('Error:', e)
 
-    def get_all(self, query:dict=None) -> list:
+    def get_all(self, query: dict = None) -> list:
         """
         Method for getting all data from collection
         :return: the list of documents
