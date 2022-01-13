@@ -14,6 +14,6 @@ class IsPlayer(BoundFilter):
     async def check(self, message: types.Message) -> bool:
         client = Client(DB_PASSWORD, 'Telegramia', 'players')
         user_id = message.from_user.id
-        if client.get({'user_id': user_id}) is not None:
+        if await client.get({'user_id': user_id}) is not None:
             return True
         return False
