@@ -1,5 +1,4 @@
-from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo import results
+from pymongo import results, MongoClient
 
 
 class Client:
@@ -14,34 +13,34 @@ class Client:
         :param db_name: name of database in current cluster
         :param collection_name: name of collection in current database
         """
-        cluster = AsyncIOMotorClient(f'mongodb+srv://mezgoodle:{password}@telegramia.jkq5x.mongodb.net/'
-                                     f'telegramia?retryWrites=true&w=majority')
+        cluster = MongoClient(f'mongodb+srv://mezgoodle:{password}@telegramia.jkq5x.mongodb.net/'
+                              f'telegramia?retryWrites=true&w=majority')
         db = cluster[db_name]
         self.collection = db[collection_name]
 
-    async def insert(self, data: dict) -> results.InsertOneResult:
+    def insert(self, data: dict) -> results.InsertOneResult:
         """
         Method for inserting data in collection
         :param data: dictionary with field name and value
         :return: result of inserting
         """
         try:
-            return await self.collection.insert_one(data)
+            return self.collection.insert_one(data)
         except Exception as e:
             print('Error:', e)
 
-    async def get(self, query: dict) -> dict:
+    def get(self, query: dict) -> dict:
         """
         Method for getting data from collection
         :param query: dictionary with field name and value
         :return: the document that matches the query
         """
         try:
-            return await self.collection.find_one(query)
+            return self.collection.find_one(query)
         except Exception as e:
             print('Error:', e)
 
-    async def get_all(self, query: dict = None) -> list:
+    def get_all(self, query: dict = None) -> list:
         """
         Method for getting all data from collection
         :return: the list of documents
@@ -49,11 +48,11 @@ class Client:
         if query is None:
             query = {}
         try:
-            return await self.collection.find(query)
+            return self.collection.find(query)
         except Exception as e:
             print('Error:', e)
 
-    async def update(self, query: dict, data: dict) -> results.UpdateResult:
+    def update(self, query: dict, data: dict) -> results.UpdateResult:
         """
         Method for updating data in collection
         :param query: dictionary with field name and value
@@ -61,17 +60,17 @@ class Client:
         :return: result of updating
         """
         try:
-            return await self.collection.update_one(query, {'$set': data})
+            return self.collection.update_one(query, {'$set': data})
         except Exception as e:
             print('Error:', e)
 
-    async def delete(self, query: dict) -> results.DeleteResult:
+    def delete(self, query: dict) -> results.DeleteResult:
         """
         Method for deleting data in collection
         :param query: dictionary with field name and value
         :return: result of deleting
         """
         try:
-            return await self.collection.delete_one(query)
+            return self.collection.delete_one(query)
         except Exception as e:
             print('Error:', e)
