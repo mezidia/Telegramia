@@ -11,6 +11,7 @@ from aiogram.dispatcher import FSMContext
 from config import TELEGRAM_TOKEN, DB_PASSWORD
 from filters import IsPlayer
 from database import Client
+from utils import check_characteristics, check_money
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -200,12 +201,14 @@ async def process_callback(callback_query: types.CallbackQuery):
         if characteristic in callback_data:
             value, price = callback_data.split(characteristic)
             player = client.get({'user_id': user_id})
-            # TODO: write filter function for players money and characteristics
-            client.update({'user_id': user_id}, {characteristic: player[characteristic] + float(value),
-                                                 'money': player['money'] - float(price)})
-            city_name = client.get({'user_id': user_id})
-            await callback_query.answer(f'Покупка здійснена! Ви збільшили {characteristic} на {value} одиниць')
-            return await show_city_info(city_name['current_state'], callback_query.from_user.id)
+            if check_money(player, float(price)) and check_characteristics(player, float(value), characteristic):
+                client.update({'user_id': user_id}, {characteristic: player[characteristic] + float(value),
+                                                     'money': player['money'] - float(price)})
+                city_name = client.get({'user_id': user_id})
+                await callback_query.answer(f'Покупка здійснена! Ви збільшили {characteristic} на {value} одиниць')
+                return await show_city_info(city_name['current_state'], callback_query.from_user.id)
+            return await bot.send_message(callback_query.from_user.id,
+                                          'У вас недостатньо грошей або ваш рівень замалий')
     if callback_data == 'No':
         client.delete({'user_id': user_id})
         await Player.nation.set()
