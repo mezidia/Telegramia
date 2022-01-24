@@ -23,3 +23,7 @@ class Player(StatesGroup):
 
 class CityObject(StatesGroup):
     city_object = State()
+
+
+class Item(StatesGroup):
+    item = State()

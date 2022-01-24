@@ -11,7 +11,7 @@ from config import TELEGRAM_TOKEN, DB_PASSWORD
 from filters import IsPlayer
 from database import Client
 from utils import check_characteristics, check_money
-from states import Player, CityObject
+from states import Player, CityObject, Item
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -60,7 +60,8 @@ async def show_items(player_info: dict, message: types.Message):
     client = Client(DB_PASSWORD)
     items = client.get_all('items', {'city': player_info['current_state']})
     markup = await create_markup_for_shop(items)
-    await message.answer('Оберіть предмет, який хочете купити', reply_markup=markup)
+    await Item.first()
+    return await message.answer('Оберіть предмет, який хочете купити', reply_markup=markup)
 
 
 async def show_horses(player_info: dict, message: types.Message):
@@ -270,6 +271,8 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
 @dp.message_handler(state=CityObject.city_object)
 async def answer_city_object(message: types.Message, state: FSMContext):
     text = message.text
+    if text == 'Назад':
+        return await echo(message, state)
     if not text.startswith('/'):
         client = Client(DB_PASSWORD)
         user_id = message.from_user.id
@@ -278,6 +281,19 @@ async def answer_city_object(message: types.Message, state: FSMContext):
             if city_object['ukr_name'] == text:
                 await state.finish()
                 return await city_object['function'](player, message)
+
+
+@dp.message_handler(state=Item.item)
+async def answer_item_purchase(message: types.Message, state: FSMContext):
+    text = message.text
+    if text == 'Назад':
+        return await echo(message, state)
+    if not text.startswith('/'):
+        # client = Client(DB_PASSWORD)
+        # user_id = message.from_user.id
+        # player = client.get({'user_id': user_id}, 'players')
+        await state.finish()
+        return await bot.send_message(message.chat.id, text)
 
 
 @dp.message_handler(commands=['create'])
@@ -314,18 +330,26 @@ async def show_player_handler(message: types.Message):
 
 
 @dp.message_handler()
-async def echo(message: types.Message):
+async def echo(message: types.Message, state: FSMContext):
     client = Client(DB_PASSWORD)
     user_id = message.from_user.id
     chat_id = message.chat.id
     text = message.text
     player = client.get({'user_id': user_id}, 'players')
+
     # TODO: handle buying items and roads
     # TODO: change it to the states
     # ============ Text is from city objects
     if text == 'Назад':
+        current_state = await state.get_state()
+        if current_state is not None:
+            await state.finish()
+        # If nothing will appear, condition is unnecessary
         return await show_city_info(player['current_state'], chat_id)
     # ============ Text is the road's name
+    # ============ If nothing, try to show city
+    await show_city_info(player['current_state'], chat_id)
+
 
 
 if __name__ == '__main__':
