@@ -11,7 +11,7 @@ from config import TELEGRAM_TOKEN, DB_PASSWORD
 from filters import IsPlayer
 from database import Client
 from utils import check_characteristics, check_money
-from states import Player
+from states import Player, CityObject
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -168,6 +168,7 @@ async def show_city_info(city_name: str, chat_id: str):
             pass
     buttons.append(types.KeyboardButton('Дороги'))
     markup.add(*buttons)
+    await CityObject.first()
     await bot.send_photo(chat_id, photo_url, f'Ви знаходитесь у місті {city_name}', reply_markup=markup)
 
 
@@ -266,6 +267,19 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
     return await message.answer('Вас задовільняє ваш персонаж?', reply_markup=markup)
 
 
+@dp.message_handler(state=CityObject.city_object)
+async def answer_city_object(message: types.Message, state: FSMContext):
+    text = message.text
+    if not text.startswith('/'):
+        client = Client(DB_PASSWORD)
+        user_id = message.from_user.id
+        player = client.get({'user_id': user_id}, 'players')
+        for city_object in city_objects:
+            if city_object['ukr_name'] == text:
+                await state.finish()
+                return await city_object['function'](player, message)
+
+
 @dp.message_handler(commands=['create'])
 async def create_player_handler(message: types.Message):
     client = Client(DB_PASSWORD)
@@ -312,11 +326,6 @@ async def echo(message: types.Message):
     if text == 'Назад':
         return await show_city_info(player['current_state'], chat_id)
     # ============ Text is the road's name
-
-    # ============ Text is the name of the city objects
-    for city_object in city_objects:
-        if city_object['ukr_name'] == text:
-            return await city_object['function'](player, message)
 
 
 if __name__ == '__main__':

@@ -19,3 +19,7 @@ class Player(StatesGroup):
     items = State()
     mount = State()
     current_state = State()
+
+
+class CityObject(StatesGroup):
+    city_object = State()
