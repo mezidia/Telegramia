@@ -26,8 +26,8 @@ dp.filters_factory.bind(IsPlayer, event_handlers=[dp.message_handlers])
 
 
 async def show_roads(player_info: dict, message: types.Message):
-    client = Client(DB_PASSWORD, 'Telegramia', 'roads')
-    roads = client.get_all({'from_obj': player_info['current_state']})
+    client = Client(DB_PASSWORD)
+    roads = client.get_all('roads', {'from_obj': player_info['current_state']})
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     for road in roads:
         markup.add(types.KeyboardButton(f'{road["from_obj"]}-{road["to_obj"]}'))
@@ -57,15 +57,15 @@ async def create_recover_markup(characteristic: str):
 
 
 async def show_items(player_info: dict, message: types.Message):
-    client = Client(DB_PASSWORD, 'Telegramia', 'items')
-    items = client.get_all({'city': player_info['current_state']})
+    client = Client(DB_PASSWORD)
+    items = client.get_all('items', {'city': player_info['current_state']})
     markup = await create_markup_for_shop(items)
     await message.answer('Оберіть предмет, який хочете купити', reply_markup=markup)
 
 
 async def show_horses(player_info: dict, message: types.Message):
-    client = Client(DB_PASSWORD, 'Telegramia', 'horses')
-    horses = client.get_all({'city': player_info['current_state']})
+    client = Client(DB_PASSWORD)
+    horses = client.get_all('horses', {'city': player_info['current_state']})
     markup = await create_markup_for_shop(horses)
     await message.answer('Оберіть предмет, який хочете купити', reply_markup=markup)
 
@@ -149,8 +149,8 @@ class Player(StatesGroup):
 
 
 async def create_keyboard(collection_name: str, field_name: str):
-    client = Client(DB_PASSWORD, 'Telegramia', collection_name)
-    objects = client.get_all()
+    client = Client(DB_PASSWORD)
+    objects = client.get_all(collection_name)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     buttons = []
     for object_ in objects:
@@ -177,8 +177,8 @@ async def prepare_player_info(data):
 
 async def show_city_info(city_name: str, chat_id: str):
     photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{city_name}.jpg'
-    client = Client(DB_PASSWORD, 'Telegramia', 'cities')
-    city = client.get({'name': city_name})
+    client = Client(DB_PASSWORD)
+    city = client.get({'name': city_name}, 'cities')
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False, row_width=3)
     buttons = []
     for city_object in city_objects:
@@ -195,27 +195,27 @@ async def show_city_info(city_name: str, chat_id: str):
 @dp.callback_query_handler(lambda c: c.data)
 async def process_callback(callback_query: types.CallbackQuery):
     user_id = callback_query.from_user.id
-    client = Client(DB_PASSWORD, 'Telegramia', 'players')
+    client = Client(DB_PASSWORD)
     callback_data = callback_query.data
     for characteristic in characteristics:
         if characteristic in callback_data:
             value, price = callback_data.split(characteristic)
-            player = client.get({'user_id': user_id})
+            player = client.get({'user_id': user_id}, 'players')
             if check_money(player, float(price)) and check_characteristics(player, float(value), characteristic):
                 client.update({'user_id': user_id}, {characteristic: player[characteristic] + float(value),
-                                                     'money': player['money'] - float(price)})
-                city_name = client.get({'user_id': user_id})
+                                                     'money': player['money'] - float(price)}, 'players')
+                city_name = client.get({'user_id': user_id}, 'players')
                 await callback_query.answer(f'Покупка здійснена! Ви збільшили {characteristic} на {value} одиниць')
                 return await show_city_info(city_name['current_state'], callback_query.from_user.id)
             return await bot.send_message(callback_query.from_user.id,
                                           'У вас недостатньо грошей або ваш рівень замалий')
     if callback_data == 'No':
-        client.delete({'user_id': user_id})
+        client.delete({'user_id': user_id}, 'players')
         await Player.nation.set()
         markup = await create_keyboard('countries', 'name')
         return await bot.send_message(callback_query.from_user.id, 'Оберіть країну', reply_markup=markup)
     else:
-        city_name = client.get({'user_id': user_id})
+        city_name = client.get({'user_id': user_id}, 'players')
         return await show_city_info(city_name['current_state'], callback_query.from_user.id)
 
 
@@ -238,8 +238,8 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
     nation = message.text
     user_id = message.from_user.id
     telegram_name = message.from_user.username
-    client = Client(DB_PASSWORD, 'Telegramia', 'countries')
-    country = client.get({'name': nation})
+    client = Client(DB_PASSWORD)
+    country = client.get({'name': nation}, 'countries')
     await state.update_data({'nation': nation})
     await state.update_data({'user_id': user_id})
     await state.update_data({'telegram_name': telegram_name})
@@ -269,8 +269,8 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
 async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> types.Message:
     class_name = message.text
     await state.update_data({'hero_class': class_name})
-    client = Client(DB_PASSWORD, 'Telegramia', 'classes')
-    class_ = client.get({'name': class_name})
+    client = Client(DB_PASSWORD)
+    class_ = client.get({'name': class_name}, 'classes')
     await state.update_data({'strength': class_['characteristics']['strength']})
     await state.update_data({'agility': class_['characteristics']['agility']})
     await state.update_data({'intuition': class_['characteristics']['intuition']})
@@ -278,8 +278,8 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
     data = await state.get_data()
     await state.finish()
     text = await prepare_player_info(data)
-    client = Client(DB_PASSWORD, 'Telegramia', 'players')
-    client.insert(data)
+    client = Client(DB_PASSWORD)
+    client.insert(data, 'players')
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(types.InlineKeyboardButton('Так', callback_data='Yes'),
                types.InlineKeyboardButton('Ні', callback_data='No'))
@@ -289,9 +289,9 @@ async def answer_repo_name_issue(message: types.Message, state: FSMContext) -> t
 
 @dp.message_handler(commands=['create'])
 async def create_player_handler(message: types.Message):
-    client = Client(DB_PASSWORD, 'Telegramia', 'players')
+    client = Client(DB_PASSWORD)
     user_id = message.from_user.id
-    if client.get({'user_id': user_id}) is not None:
+    if client.get({'user_id': user_id}, 'players') is not None:
         return await message.reply('Ви вже зареєстровані')
     photo_url = 'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_intro.jpg'
     text = 'Вітаємо у магічному світі *Telegramia*. Цей світ повен пригод, цікавих людей, підступних ворогів, ' \
@@ -306,27 +306,27 @@ async def create_player_handler(message: types.Message):
 async def send_place_info(message: types.Message):
     user_id = message.from_user.id
     chat_id = message.chat.id
-    client = Client(DB_PASSWORD, 'Telegramia', 'players')
-    city_name = client.get({'user_id': user_id})
+    client = Client(DB_PASSWORD)
+    city_name = client.get({'user_id': user_id}, 'players')
     await show_city_info(city_name['current_state'], chat_id)
 
 
 @dp.message_handler(is_player=True, commands=['me'])
 async def show_player_handler(message: types.Message):
-    client = Client(DB_PASSWORD, 'Telegramia', 'players')
+    client = Client(DB_PASSWORD)
     user_id = message.from_user.id
-    player = client.get({'user_id': user_id})
+    player = client.get({'user_id': user_id}, 'players')
     text = await prepare_player_info(player)
     await message.answer(text, parse_mode='Markdown')
 
 
 @dp.message_handler()
 async def echo(message: types.Message):
-    client = Client(DB_PASSWORD, 'Telegramia', 'players')
+    client = Client(DB_PASSWORD)
     user_id = message.from_user.id
     chat_id = message.chat.id
     text = message.text
-    player = client.get({'user_id': user_id})
+    player = client.get({'user_id': user_id}, 'players')
     # TODO: handle buying items and roads
     if text == 'Назад':
         await show_city_info(player['current_state'], chat_id)
