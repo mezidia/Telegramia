@@ -4,7 +4,6 @@ import logging
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher import FSMContext
 
@@ -12,6 +11,7 @@ from config import TELEGRAM_TOKEN, DB_PASSWORD
 from filters import IsPlayer
 from database import Client
 from utils import check_characteristics, check_money
+from states import Player
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -125,27 +125,6 @@ city_objects = [
 ]
 
 characteristics = ['energy', 'health', 'intelligence']
-
-
-# States
-class Player(StatesGroup):
-    user_id = State()
-    telegram_name = State()
-    name = State()
-    level = State()
-    experience = State()
-    health = State()
-    energy = State()
-    strength = State()
-    agility = State()
-    intuition = State()
-    intelligence = State()
-    hero_class = State()
-    nation = State()
-    money = State()
-    items = State()
-    mount = State()
-    current_state = State()
 
 
 async def create_keyboard(collection_name: str, field_name: str):
@@ -328,12 +307,16 @@ async def echo(message: types.Message):
     text = message.text
     player = client.get({'user_id': user_id}, 'players')
     # TODO: handle buying items and roads
+    # TODO: change it to the states
+    # ============ Text is from city objects
     if text == 'Назад':
-        await show_city_info(player['current_state'], chat_id)
-        return
+        return await show_city_info(player['current_state'], chat_id)
+    # ============ Text is the road's name
+
+    # ============ Text is the name of the city objects
     for city_object in city_objects:
         if city_object['ukr_name'] == text:
-            await city_object['function'](player, message)
+            return await city_object['function'](player, message)
 
 
 if __name__ == '__main__':
