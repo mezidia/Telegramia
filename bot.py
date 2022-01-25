@@ -10,7 +10,7 @@ from aiogram.dispatcher import FSMContext
 from config import TELEGRAM_TOKEN, DB_PASSWORD
 from filters import IsPlayer
 from database import Client
-from utils import check_characteristics, check_money
+from utils import check_characteristics, check_money, parse_purchase
 from states import Player, CityObject, Item
 
 # Configure logging
@@ -289,11 +289,20 @@ async def answer_item_purchase(message: types.Message, state: FSMContext):
     if text == 'Назад':
         return await echo(message, state)
     if not text.startswith('/'):
-        # client = Client(DB_PASSWORD)
-        # user_id = message.from_user.id
-        # player = client.get({'user_id': user_id}, 'players')
-        await state.finish()
-        return await bot.send_message(message.chat.id, text)
+        client = Client(DB_PASSWORD)
+        user_id = message.from_user.id
+        player = client.get({'user_id': user_id}, 'players')
+        item, price = parse_purchase(text)
+        if check_money(player, price):
+            # TODO: check if player has also this item
+            await state.finish()
+            items = player['items']
+            items.append(item)
+            _ = client.update({'user_id': user_id}, {'items': items, 'money': player['money'] - price}, 'players')
+            await message.answer(f'Ви успішно купили {item}')
+        else:
+            await message.answer('У вас недостатньо грошей')
+        return await show_city_info(player['current_state'], message.chat.id)
 
 
 @dp.message_handler(commands=['create'])
@@ -349,7 +358,6 @@ async def echo(message: types.Message, state: FSMContext):
     # ============ Text is the road's name
     # ============ If nothing, try to show city
     await show_city_info(player['current_state'], chat_id)
-
 
 
 if __name__ == '__main__':
