@@ -18,3 +18,11 @@ def parse_purchase(text: str) -> Tuple[str, float]:
     item = ' '.join(item_list)
     return item, price
 
+
+async def finish_state(state):
+    try:
+        current_state = await state.get_state()
+        if current_state is not None:
+            await state.finish()
+    except AttributeError:
+        pass

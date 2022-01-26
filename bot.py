@@ -10,7 +10,7 @@ from aiogram.dispatcher import FSMContext
 from config import TELEGRAM_TOKEN, DB_PASSWORD
 from filters import IsPlayer
 from database import Client
-from utils import check_characteristics, check_money, parse_purchase
+from utils import check_characteristics, check_money, parse_purchase, finish_state
 from states import Player, CityObject, Item
 
 # Configure logging
@@ -155,7 +155,8 @@ async def prepare_player_info(data):
     return text
 
 
-async def show_city_info(city_name: str, chat_id: str):
+async def show_city_info(city_name: str, chat_id: str, state=None):
+    await finish_state(state)
     photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{city_name}.jpg'
     client = Client(DB_PASSWORD)
     city = client.get({'name': city_name}, 'cities')
@@ -294,15 +295,17 @@ async def answer_item_purchase(message: types.Message, state: FSMContext):
         player = client.get({'user_id': user_id}, 'players')
         item, price = parse_purchase(text)
         if check_money(player, price):
-            # TODO: check if player has also this item
             await state.finish()
             items = player['items']
-            items.append(item)
-            _ = client.update({'user_id': user_id}, {'items': items, 'money': player['money'] - price}, 'players')
-            await message.answer(f'Ви успішно купили {item}')
+            if item in items:
+                await message.answer('У вас вже є цей предмет')
+            else:
+                items.append(item)
+                _ = client.update({'user_id': user_id}, {'items': items, 'money': player['money'] - price}, 'players')
+                await message.answer(f'Ви успішно купили {item}')
         else:
             await message.answer('У вас недостатньо грошей')
-        return await show_city_info(player['current_state'], message.chat.id)
+        return await show_city_info(player['current_state'], message.chat.id, state)
 
 
 @dp.message_handler(commands=['create'])
@@ -350,14 +353,11 @@ async def echo(message: types.Message, state: FSMContext):
     # TODO: change it to the states
     # ============ Text is from city objects
     if text == 'Назад':
-        current_state = await state.get_state()
-        if current_state is not None:
-            await state.finish()
         # If nothing will appear, condition is unnecessary
-        return await show_city_info(player['current_state'], chat_id)
+        return await show_city_info(player['current_state'], chat_id, state)
     # ============ Text is the road's name
     # ============ If nothing, try to show city
-    await show_city_info(player['current_state'], chat_id)
+    await show_city_info(player['current_state'], chat_id, state)
 
 
 if __name__ == '__main__':
