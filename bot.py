@@ -283,7 +283,12 @@ async def echo(message: types.Message, state: FSMContext):
     text = message.text
     player = client.get({'user_id': user_id}, 'players')
 
-    # TODO: handle buying items and roads
+    for city_object in city_objects:
+        if city_object['ukr_name'] == text:
+            await state.finish()
+            return await city_object['function'](player, message)
+
+    # TODO: handle roads
     # TODO: change it to the states
     # ============ Text is from city objects
     if text == 'Назад':
