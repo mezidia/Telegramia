@@ -2,7 +2,7 @@ from aiogram import types
 
 from database import Client
 from config import DB_PASSWORD
-from states import Item
+from states import Item, Road
 
 
 async def show_roads(player_info: dict, message: types.Message):
@@ -10,8 +10,9 @@ async def show_roads(player_info: dict, message: types.Message):
     roads = client.get_all('roads', {'from_obj': player_info['current_state']})
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     for road in roads:
-        markup.add(types.KeyboardButton(f'{road["from_obj"]}-{road["to_obj"]}'))
+        markup.add(types.KeyboardButton(f'{road["name"]}'))
     markup.add(types.KeyboardButton('Назад'))
+    await Road.first()
     await message.answer('Оберіть місце, куди хочете відправитись', reply_markup=markup)
 
 

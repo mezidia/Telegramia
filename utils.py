@@ -11,6 +11,11 @@ def check_characteristics(player: dict, value: float, characteristic: str) -> bo
     return player_value <= player['level'] * 50
 
 
+def check_energy(player: dict, energy_value: float) -> bool:
+    player_energy = player['energy']
+    return player_energy - energy_value >= 0
+
+
 def parse_purchase(text: str) -> Tuple[str, float]:
     text_list = text.split(' ')
     price = float(text_list[-1])

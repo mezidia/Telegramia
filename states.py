@@ -27,3 +27,7 @@ class CityObject(StatesGroup):
 
 class Item(StatesGroup):
     item = State()
+
+
+class Road(StatesGroup):
+    road_name = State()

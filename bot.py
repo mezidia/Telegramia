@@ -10,8 +10,8 @@ from aiogram.dispatcher import FSMContext
 from config import TELEGRAM_TOKEN, DB_PASSWORD
 from filters import IsPlayer
 from database import Client
-from utils import check_characteristics, check_money, parse_purchase, finish_state
-from states import Player, CityObject, Item
+from utils import check_characteristics, check_money, check_energy, parse_purchase, finish_state
+from states import Player, CityObject, Item, Road
 from object_markups import show_items, enter_tavern, enter_temple, enter_academy, show_roads, show_horses
 
 # Configure logging
@@ -243,6 +243,28 @@ async def answer_item_purchase(message: types.Message, state: FSMContext):
         return await show_city_info(player['current_state'], message.chat.id, state)
     else:
         return await handle_commands(message, text)
+
+
+@dp.message_handler(state=Road.road_name)
+async def answer_road_choice(message: types.Message, state: FSMContext):
+    road_name = message.text
+    if road_name == 'Назад':
+        return await echo(message, state)
+    if not road_name.startswith('/'):
+        client = Client(DB_PASSWORD)
+        user_id = message.from_user.id
+        player = client.get({'user_id': user_id}, 'players')
+        road = client.get({'name': road_name}, 'roads')
+        road_energy = float(road['energy'])
+        if check_energy(player, road_energy):
+            await state.finish()
+            _ = client.update({'user_id': user_id},
+                              {'current_state': road['to_obj'], 'energy': player['energy'] - road_energy}, 'players')
+        else:
+            await message.answer('У вас недостатньо енергії')
+        return await show_city_info(player['current_state'], message.chat.id, state)
+    else:
+        return await handle_commands(message, road_name)
 
 
 async def handle_commands(message: types.Message, text: str):
