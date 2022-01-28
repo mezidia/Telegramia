@@ -25,7 +25,6 @@ dp = Dispatcher(bot, storage=storage)
 # Activate filters
 dp.filters_factory.bind(IsPlayer, event_handlers=[dp.message_handlers])
 
-
 city_objects = [
     {
         'name': 'market',
@@ -216,6 +215,8 @@ async def answer_city_object(message: types.Message, state: FSMContext):
             if city_object['ukr_name'] == text:
                 await state.finish()
                 return await city_object['function'](player, message)
+    else:
+        return await handle_commands(message, text)
 
 
 @dp.message_handler(state=Item.item)
@@ -240,6 +241,17 @@ async def answer_item_purchase(message: types.Message, state: FSMContext):
         else:
             await message.answer('У вас недостатньо грошей')
         return await show_city_info(player['current_state'], message.chat.id, state)
+    else:
+        return await handle_commands(message, text)
+
+
+async def handle_commands(message: types.Message, text: str):
+    commands = {
+        '/create': create_player_handler,
+        '/where': send_place_info,
+        '/me': show_player_handler
+    }
+    return await commands[text](message)
 
 
 @dp.message_handler(commands=['create'])
