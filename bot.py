@@ -322,14 +322,10 @@ async def echo(message: types.Message, state: FSMContext):
             await state.finish()
             return await city_object['function'](player, message)
 
-    # TODO: handle roads
     # TODO: change it to the states
-    # ============ Text is from city objects
     if text == 'Назад':
         # If nothing will appear, condition is unnecessary
         return await show_city_info(player['current_state'], chat_id, state)
-    # ============ Text is the road's name
-    # ============ If nothing, try to show city
     await show_city_info(player['current_state'], chat_id, state)
 
 
