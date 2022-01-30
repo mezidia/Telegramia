@@ -247,6 +247,7 @@ async def answer_item_purchase(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=Road.road_name)
 async def answer_road_choice(message: types.Message, state: FSMContext):
+    # TODO: take an effect from the mount
     road_name = message.text
     if road_name == 'Назад':
         return await echo(message, state)
