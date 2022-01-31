@@ -1,4 +1,5 @@
 # TODO: write logics for raids and dungeons
+# TODO: create map image
 
 import logging
 
