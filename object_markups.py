@@ -2,7 +2,7 @@ from aiogram import types
 
 from database import Client
 from config import DB_PASSWORD
-from states import Item, Road
+from states import Item, Road, Horse
 
 
 async def show_roads(player_info: dict, message: types.Message):
@@ -49,6 +49,7 @@ async def show_horses(player_info: dict, message: types.Message):
     client = Client(DB_PASSWORD)
     horses = client.get_all('horses', {'city': player_info['current_state']})
     markup = await create_markup_for_shop(horses)
+    await Horse.first()
     await message.answer('Оберіть предмет, який хочете купити', reply_markup=markup)
 
 

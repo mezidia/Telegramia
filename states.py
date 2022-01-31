@@ -29,5 +29,9 @@ class Item(StatesGroup):
     item = State()
 
 
+class Horse(StatesGroup):
+    horse = State()
+
+
 class Road(StatesGroup):
     road_name = State()

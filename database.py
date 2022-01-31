@@ -1,4 +1,3 @@
-# TODO: change to motor
 # TODO: change lists to tuples
 from pymongo import results, MongoClient
 

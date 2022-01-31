@@ -11,7 +11,7 @@ from config import TELEGRAM_TOKEN, DB_PASSWORD
 from filters import IsPlayer
 from database import Client
 from utils import check_characteristics, check_money, check_energy, parse_purchase, finish_state
-from states import Player, CityObject, Item, Road
+from states import Player, CityObject, Item, Road, Horse
 from object_markups import show_items, enter_tavern, enter_temple, enter_academy, show_roads, show_horses
 
 # Configure logging
@@ -230,14 +230,40 @@ async def answer_item_purchase(message: types.Message, state: FSMContext):
         player = client.get({'user_id': user_id}, 'players')
         item, price = parse_purchase(text)
         if check_money(player, price):
-            await state.finish()
             items = player['items']
             if item in items:
                 await message.answer('У вас вже є цей предмет')
             else:
+                await state.finish()
                 items.append(item)
                 _ = client.update({'user_id': user_id}, {'items': items, 'money': player['money'] - price}, 'players')
                 await message.answer(f'Ви успішно купили {item}')
+        else:
+            await message.answer('У вас недостатньо грошей')
+        return await show_city_info(player['current_state'], message.chat.id, state)
+    else:
+        return await handle_commands(message, text)
+
+
+@dp.message_handler(state=Horse.horse)
+async def answer_horse_purchase(message: types.Message, state: FSMContext):
+    text = message.text
+    if text == 'Назад':
+        return await echo(message, state)
+    if not text.startswith('/'):
+        client = Client(DB_PASSWORD)
+        user_id = message.from_user.id
+        player = client.get({'user_id': user_id}, 'players')
+        horse, price = parse_purchase(text)
+        if check_money(player, price):
+            player_mount = player['mount']['name']
+            if player_mount == horse:
+                await message.answer('У вас вже є цей кінь')
+            else:
+                await state.finish()
+                mount = client.get({'name': horse}, 'horses')
+                _ = client.update({'user_id': user_id}, {'mount': mount, 'money': player['money'] - price}, 'players')
+                await message.answer(f'Ви успішно купили {horse}')
         else:
             await message.answer('У вас недостатньо грошей')
         return await show_city_info(player['current_state'], message.chat.id, state)
