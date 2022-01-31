@@ -247,7 +247,6 @@ async def answer_item_purchase(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=Road.road_name)
 async def answer_road_choice(message: types.Message, state: FSMContext):
-    # TODO: take an effect from the mount
     road_name = message.text
     if road_name == 'Назад':
         return await echo(message, state)
@@ -259,6 +258,8 @@ async def answer_road_choice(message: types.Message, state: FSMContext):
         road_energy = float(road['energy'])
         if check_energy(player, road_energy):
             await state.finish()
+            if mount := player['mount']:
+                road_energy -= mount['bonus']
             _ = client.update({'user_id': user_id},
                               {'current_state': road['to_obj'], 'energy': player['energy'] - road_energy}, 'players')
         else:

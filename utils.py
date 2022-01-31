@@ -11,8 +11,17 @@ def check_characteristics(player: dict, value: float, characteristic: str) -> bo
     return player_value <= player['level'] * 50
 
 
-def check_energy(player: dict, energy_value: float) -> bool:
+def check_energy(player: dict, energy_value: float, travel: bool = True) -> bool:
+    """
+
+    :param player:
+    :param energy_value:
+    :param travel: False, if it is a dungeon or raid invasion
+    :return:
+    """
     player_energy = player['energy']
+    if travel and (mount := player['mount']):
+        energy_value -= mount['bonus']
     return player_energy - energy_value >= 0
 
 
