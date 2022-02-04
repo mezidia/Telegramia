@@ -1,5 +1,6 @@
 # TODO: write logics for raids and dungeons
 # TODO: create map image
+# TODO: make more separate files
 
 import logging
 
@@ -90,9 +91,13 @@ async def prepare_player_info(data):
 
 
 async def show_city_info(city_name: str, chat_id: str, state=None):
+    client = Client(DB_PASSWORD)
+    if dungeon := client.get({'name': city_name}, 'dungeons'):
+        return await show_dungeon_info(dungeon, chat_id)
+    elif raid := client.get({'name': city_name}, 'raids'):
+        return await show_raid_info(raid, chat_id)
     await finish_state(state)
     photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{city_name}.jpg'
-    client = Client(DB_PASSWORD)
     city = client.get({'name': city_name}, 'cities')
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False, row_width=3)
     buttons = []
@@ -106,6 +111,16 @@ async def show_city_info(city_name: str, chat_id: str, state=None):
     markup.add(*buttons)
     await CityObject.first()
     await bot.send_photo(chat_id, photo_url, f'Ви знаходитесь у місті {city_name}', reply_markup=markup)
+
+
+async def show_dungeon_info(dungeon: dict, chat_id: str):
+    # TODO: do here logic
+    pass
+
+
+async def show_raid_info(raid: dict, chat_id: str):
+    # TODO: do here logic
+    pass
 
 
 @dp.callback_query_handler(lambda c: c.data)
