@@ -14,7 +14,9 @@ from filters import IsPlayer
 from database import Client
 from utils import check_characteristics, check_money, check_energy, parse_purchase, finish_state
 from states import Player, CityObject, Item, Road, Horse
-from object_markups import show_items, enter_tavern, enter_temple, enter_academy, show_roads, show_horses
+from object_markups import (show_items, enter_tavern, enter_temple,
+                            enter_academy, show_roads, show_horses,
+                            show_dungeon, enter_dungeon)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -58,6 +60,16 @@ city_objects = [
         'ukr_name': 'Дороги',
         'function': show_roads
     },
+    {
+        'name': 'dungeon_info',
+        'ukr_name': 'Інформація про підземелля',
+        'function': show_dungeon
+    },
+    {
+        'name': 'dungeon_enter',
+        'ukr_name': 'Увійти у підземелля',
+        'function': enter_dungeon
+    },
 ]
 
 characteristics = ['energy', 'health', 'intelligence']
@@ -92,35 +104,30 @@ async def prepare_player_info(data):
 
 async def show_city_info(city_name: str, chat_id: str, state=None):
     client = Client(DB_PASSWORD)
-    if dungeon := client.get({'name': city_name}, 'dungeons'):
-        return await show_dungeon_info(dungeon, chat_id)
-    elif raid := client.get({'name': city_name}, 'raids'):
-        return await show_raid_info(raid, chat_id)
     await finish_state(state)
-    photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{city_name}.jpg'
-    city = client.get({'name': city_name}, 'cities')
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False, row_width=3)
-    buttons = []
-    for city_object in city_objects:
-        try:
-            if city[city_object['name']]:
-                buttons.append(types.KeyboardButton(city_object['ukr_name']))
-        except KeyError:
-            pass
-    buttons.append(types.KeyboardButton('Дороги'))
-    markup.add(*buttons)
+    photo_url = ''
+    if dungeon := client.get({'name': city_name}, 'dungeons'):
+        markup.add(types.KeyboardButton('Інформація про підземелля'))
+        markup.add(types.KeyboardButton('Увійти у підземелля'))
+        photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{dungeon["name"]}.jpg'
+    elif raid := client.get({'name': city_name}, 'raids'):
+        # TODO: do here logic as above
+        pass
+    else:
+        photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{city_name}.jpg'
+        city = client.get({'name': city_name}, 'cities')
+        buttons = []
+        for city_object in city_objects:
+            try:
+                if city[city_object['name']]:
+                    buttons.append(types.KeyboardButton(city_object['ukr_name']))
+            except KeyError:
+                pass
+        buttons.append(types.KeyboardButton('Дороги'))
+        markup.add(*buttons)
     await CityObject.first()
-    await bot.send_photo(chat_id, photo_url, f'Ви знаходитесь у місті {city_name}', reply_markup=markup)
-
-
-async def show_dungeon_info(dungeon: dict, chat_id: str):
-    # TODO: do here logic
-    pass
-
-
-async def show_raid_info(raid: dict, chat_id: str):
-    # TODO: do here logic
-    pass
+    return await bot.send_photo(chat_id, photo_url, f'Ви знаходитесь у місті {city_name}', reply_markup=markup)
 
 
 @dp.callback_query_handler(lambda c: c.data)
@@ -306,7 +313,7 @@ async def answer_road_choice(message: types.Message, state: FSMContext):
                               {'current_state': road['to_obj'], 'energy': player['energy'] - road_energy}, 'players')
         else:
             await message.answer('У вас недостатньо енергії')
-        return await show_city_info(player['current_state'], message.chat.id, state)
+        return await show_city_info(road['to_obj'], message.chat.id, state)
     else:
         return await handle_commands(message, road_name)
 

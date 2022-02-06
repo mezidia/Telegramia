@@ -72,3 +72,17 @@ async def enter_tavern(player_info: dict, message: types.Message):
     await message.answer(f'Ви знаходитесь у таверні міста {player_info["current_state"]}'
                          f' і у вас {player_info["energy"]} енергії. Ви хочете відновити її?',
                          reply_markup=markup)
+
+
+async def show_dungeon(player_info: dict, message: types.Message):
+    client = Client(DB_PASSWORD)
+    dungeon = client.get({'name': player_info['current_state']}, 'dungeons')
+    text = f'🌇Підземелля - {dungeon["name"]}\n\n📖{dungeon["description"]}\n\n' \
+           f'Буде отримано шкоди - {dungeon["damage"]}\n\n' \
+           f'💵Буде отримано нагороди - {dungeon["treasure"]}'
+    await message.answer(text)
+
+
+async def enter_dungeon(player_info: dict, message: types.Message):
+    # TODO: do here logic
+    await message.answer(f'Hello {player_info["name"]}')
