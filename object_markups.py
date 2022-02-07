@@ -9,6 +9,7 @@ from datetime import datetime
 
 
 async def show_roads(player_info: dict, message: types.Message):
+    # TODO: check if player in dungeon or in a raid
     client = Client(DB_PASSWORD)
     roads = client.get_all('roads', {'from_obj': player_info['current_state']})
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
