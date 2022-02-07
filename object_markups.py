@@ -4,6 +4,8 @@ from database import Client
 from config import DB_PASSWORD
 from states import Item, Road, Horse
 
+from datetime import datetime
+
 
 async def show_roads(player_info: dict, message: types.Message):
     client = Client(DB_PASSWORD)
@@ -84,5 +86,11 @@ async def show_dungeon(player_info: dict, message: types.Message):
 
 
 async def enter_dungeon(player_info: dict, message: types.Message):
-    # TODO: do here logic
-    await message.answer(f'Hello {player_info["name"]}')
+    client = Client(DB_PASSWORD)
+    dungeon = client.get({'name': player_info['current_state']}, 'dungeons')
+    date = datetime.now()
+    members = dungeon['members']
+    dungeon_time = dungeon['base_time']
+    members[player_info['name']] = date
+    _ = client.update({'name': player_info['current_state']}, {'members': members}, 'dungeons')
+    await message.answer(f'Ви почали захоплення підземелля. Повернутись у місто ви можете через {dungeon_time} секунд')
