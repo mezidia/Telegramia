@@ -6,6 +6,11 @@ def check_money(player: dict, price: float) -> bool:
     return player_money - price > 0
 
 
+def check_health(player: dict, damage: float) -> bool:
+    player_health = player['health']
+    return player_health - damage > 0
+
+
 def check_characteristics(player: dict, value: float, characteristic: str) -> bool:
     player_value = player[characteristic] + value
     return player_value <= player['level'] * 50

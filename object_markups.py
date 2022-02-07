@@ -3,6 +3,7 @@ from aiogram import types
 from database import Client
 from config import DB_PASSWORD
 from states import Item, Road, Horse
+from utils import check_health
 
 from datetime import datetime
 
@@ -88,9 +89,15 @@ async def show_dungeon(player_info: dict, message: types.Message):
 async def enter_dungeon(player_info: dict, message: types.Message):
     client = Client(DB_PASSWORD)
     dungeon = client.get({'name': player_info['current_state']}, 'dungeons')
-    date = datetime.now()
-    members = dungeon['members']
-    dungeon_time = dungeon['base_time']
-    members[player_info['name']] = date
-    _ = client.update({'name': player_info['current_state']}, {'members': members}, 'dungeons')
-    await message.answer(f'Ви почали захоплення підземелля. Повернутись у місто ви можете через {dungeon_time} секунд')
+    if check_health(player_info, dungeon['damage']):
+        date = datetime.now()
+        members = dungeon['members']
+        members[player_info['name']] = date
+        user_id = player_info['user_id']
+        _ = client.update({'name': player_info['current_state']}, {'members': members}, 'dungeons')
+        _ = client.update({'user_id': user_id}, {'health': player_info['health'] - dungeon['damage'],
+                                                 'money': player_info['money'] + dungeon['treasure']},
+                          'players')
+        return await message.answer(f'Ви почали захоплення підземелля. '
+                                    f'Повернутись у місто ви можете через {dungeon["base_time"]} секунд')
+    return await message.answer('У вас недостатньо здоров\'я. Поверніться у місто, щоб вилікуватись')
