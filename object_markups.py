@@ -3,7 +3,7 @@ from aiogram import types
 from database import Client
 from config import DB_PASSWORD
 from states import Item, Road, Horse
-from utils import check_health
+from utils import check_health, check_in_dungeon
 
 from datetime import datetime
 
@@ -11,6 +11,8 @@ from datetime import datetime
 async def show_roads(player_info: dict, message: types.Message):
     # TODO: check if player in dungeon or in a raid
     client = Client(DB_PASSWORD)
+    if check_in_dungeon(player_info, client):
+        return await message.answer('Ви все ще проходите підземелля, потрібно зачекати')
     roads = client.get_all('roads', {'from_obj': player_info['current_state']})
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     for road in roads:
@@ -83,12 +85,15 @@ async def show_dungeon(player_info: dict, message: types.Message):
     dungeon = client.get({'name': player_info['current_state']}, 'dungeons')
     text = f'🌇Підземелля - {dungeon["name"]}\n\n📖{dungeon["description"]}\n\n' \
            f'Буде отримано шкоди - {dungeon["damage"]}\n\n' \
-           f'💵Буде отримано нагороди - {dungeon["treasure"]}'
+           f'💵Буде отримано нагороди - {dungeon["treasure"]}\n\n' \
+           f'⌚Час взяття підземелля - {dungeon["base_time"]} с'
     await message.answer(text)
 
 
 async def enter_dungeon(player_info: dict, message: types.Message):
     client = Client(DB_PASSWORD)
+    if check_in_dungeon(player_info, client):
+        return await message.answer('Ви вже у підземеллі')
     dungeon = client.get({'name': player_info['current_state']}, 'dungeons')
     if check_health(player_info, dungeon['damage']):
         date = datetime.now()

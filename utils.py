@@ -1,4 +1,7 @@
+from database import Client
+
 from typing import Tuple
+from datetime import datetime, timedelta
 
 
 def check_money(player: dict, price: float) -> bool:
@@ -14,6 +17,21 @@ def check_health(player: dict, damage: float) -> bool:
 def check_characteristics(player: dict, value: float, characteristic: str) -> bool:
     player_value = player[characteristic] + value
     return player_value <= player['level'] * 50
+
+
+def check_in_dungeon(player: dict, client: Client) -> bool:
+    try:
+        dungeon = client.get({'name': player['current_state']}, 'dungeons')
+        dungeon_members = dungeon['members']
+    except TypeError:
+        return False
+    if player['name'] in dungeon_members:
+        start_date = dungeon_members[player['name']]
+        now_date = datetime.now()
+        delta = now_date - start_date
+        dungeon_time = timedelta(seconds=dungeon['base_time'])
+        return delta < dungeon_time
+    return False
 
 
 def check_energy(player: dict, energy_value: float, travel: bool = True) -> bool:
