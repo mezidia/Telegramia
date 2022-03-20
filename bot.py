@@ -113,8 +113,10 @@ async def show_city_info(city_name: str, chat_id: str, state=None):
         markup.add(types.KeyboardButton('Дороги'))
         photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{dungeon["name"]}.jpg'
     elif raid := client.get({'name': city_name}, 'raids'):
-        # TODO: do here logic as above
-        pass
+        markup.add(types.KeyboardButton('Інформація про рейд'))
+        markup.add(types.KeyboardButton('Увійти до рейду'))
+        markup.add(types.KeyboardButton('Дороги'))
+        photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{raid["name"]}.jpg'
     else:
         photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{city_name}.jpg'
         city = client.get({'name': city_name}, 'cities')
