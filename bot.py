@@ -16,7 +16,7 @@ from utils import check_characteristics, check_money, check_energy, parse_purcha
 from states import Player, CityObject, Item, Road, Horse
 from object_markups import (show_items, enter_tavern, enter_temple,
                             enter_academy, show_roads, show_horses,
-                            show_dungeon, enter_dungeon)
+                            show_dungeon, enter_dungeon, show_raid, show_raid_level, enter_raid)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -70,6 +70,21 @@ city_objects = [
         'ukr_name': 'Увійти у підземелля',
         'function': enter_dungeon
     },
+    {
+        'name': 'raid_enter',
+        'ukr_name': 'Увійти у рейд',
+        'function': enter_raid
+    },
+    {
+        'name': 'raid_info',
+        'ukr_name': 'Інформація про рейд',
+        'function': show_raid
+    },
+    {
+        'name': 'raid_level_info',
+        'ukr_name': 'Інформація про рівень рейду',
+        'function': show_raid_level
+    },
 ]
 
 characteristics = ['energy', 'health', 'intelligence']
@@ -114,9 +129,10 @@ async def show_city_info(city_name: str, chat_id: str, state=None):
         photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{dungeon["name"]}.jpg'
     elif raid := client.get({'name': city_name}, 'raids'):
         markup.add(types.KeyboardButton('Інформація про рейд'))
+        markup.add(types.KeyboardButton('Інформація про рівень рейду'))
         markup.add(types.KeyboardButton('Увійти до рейду'))
         markup.add(types.KeyboardButton('Дороги'))
-        photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{raid["name"]}.jpg'
+        photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_Брісвель.jpg'
     else:
         photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{city_name}.jpg'
         city = client.get({'name': city_name}, 'cities')
