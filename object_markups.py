@@ -3,16 +3,17 @@ from aiogram import types
 from database import Client
 from config import DB_PASSWORD
 from states import Item, Road, Horse
-from utils import check_health, check_in_dungeon
+from utils import check_health, check_in_dungeon, check_in_raid
 
 from datetime import datetime
 
 
 async def show_roads(player_info: dict, message: types.Message):
-    # TODO: check if player in dungeon or in a raid
     client = Client(DB_PASSWORD)
     if check_in_dungeon(player_info, client):
         return await message.answer("Ви все ще проходите підземелля, потрібно зачекати")
+    if check_in_raid(player_info, client):
+        return await message.answer("Ви все ще проходите рейд, потрібно зачекати")    
     roads = client.get_all("roads", {"from_obj": player_info["current_state"]})
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     for road in roads:
@@ -175,7 +176,7 @@ async def show_raid_level(player_info: dict, message: types.Message):
 
 async def enter_raid(player_info: dict, message: types.Message):
     client = Client(DB_PASSWORD)
-    if check_in_dungeon(player_info, client):
+    if check_in_raid(player_info, client):
         return await message.answer("Ви вже у підземеллі")
     dungeon = client.get({"name": player_info["current_state"]}, "dungeons")
     if check_health(player_info, dungeon["damage"]):

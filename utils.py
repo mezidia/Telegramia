@@ -34,6 +34,23 @@ def check_in_dungeon(player: dict, client: Client) -> bool:
     return False
 
 
+def check_in_raid(player: dict, client: Client) -> bool:
+    try:
+        raid = client.get({'name': player['current_state']}, 'raids')
+        raid_members = raid['members']
+    except TypeError:
+        return False
+    if player['name'] in raid_members:
+        player_info = raid_members[player['name']]
+        raid_level = client.get({'raid_name': raid['name'], 'level': player_info['level']}, 'raid_levels')
+        start_date = player_info['time']
+        now_date = datetime.now()
+        delta = now_date - start_date
+        dungeon_time = timedelta(seconds=raid_level['base_time'])
+        return delta < dungeon_time
+    return False
+
+
 def check_energy(player: dict, energy_value: float, travel: bool = True) -> bool:
     """
 
