@@ -1,6 +1,6 @@
 from database import Client
 
-from typing import Tuple
+from typing import Tuple, Union
 from datetime import datetime, timedelta
 
 
@@ -48,6 +48,18 @@ def check_in_raid(player: dict, client: Client) -> bool:
         delta = now_date - start_date
         dungeon_time = timedelta(seconds=raid_level['base_time'])
         return delta < dungeon_time
+    return False
+
+
+def check_was_in_raid(player: dict, client: Client) -> Union[int, bool]:
+    try:
+        raid = client.get({'name': player['current_state']}, 'raids')
+        raid_members = raid['members']
+    except TypeError:
+        return False
+    if player['name'] in raid_members:
+        player_info = raid_members[player['name']]
+        return player_info['level']
     return False
 
 
