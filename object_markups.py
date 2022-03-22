@@ -3,7 +3,7 @@ from aiogram import types
 from database import Client
 from config import DB_PASSWORD
 from states import Item, Road, Horse
-from utils import check_health, check_in_dungeon, check_in_raid
+from utils import check_health, check_in_dungeon, check_in_raid, check_was_in_raid
 
 from datetime import datetime
 
@@ -13,7 +13,7 @@ async def show_roads(player_info: dict, message: types.Message):
     if check_in_dungeon(player_info, client):
         return await message.answer("Ви все ще проходите підземелля, потрібно зачекати")
     if check_in_raid(player_info, client):
-        return await message.answer("Ви все ще проходите рейд, потрібно зачекати")    
+        return await message.answer("Ви все ще проходите рейд, потрібно зачекати")
     roads = client.get_all("roads", {"from_obj": player_info["current_state"]})
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     for road in roads:
@@ -145,10 +145,7 @@ async def enter_dungeon(player_info: dict, message: types.Message):
 async def show_raid(player_info: dict, message: types.Message):
     client = Client(DB_PASSWORD)
     raid = client.get({"name": player_info["current_state"]}, "raids")
-    text = (
-        f'Рейд - {raid["name"]}\n\n📖{raid["description"]}\n\n'
-        f'💵Буде отримано нагороди - {raid["treasure"]}\n\n'
-    )
+    text = f'Рейд - {raid["name"]}\n\n📖{raid["description"]}\n\n'
     await message.answer(text)
 
 
@@ -174,30 +171,41 @@ async def show_raid_level(player_info: dict, message: types.Message):
     )
     await message.answer(text)
 
+
 async def enter_raid(player_info: dict, message: types.Message):
     client = Client(DB_PASSWORD)
     if check_in_raid(player_info, client):
         return await message.answer("Ви вже у підземеллі")
-    dungeon = client.get({"name": player_info["current_state"]}, "dungeons")
-    if check_health(player_info, dungeon["damage"]):
+    raid = client.get({"name": player_info["current_state"]}, "raids")
+    if level := check_was_in_raid(player_info, client):
+        level += 1
+        if raid_level := client.get(
+            {"raid_name": raid["name"], "level": level}, "raid_levels"
+        ):
+            return raid_level
+
+        return await message.answer("Ви вже пройшли усі рівні рейду")
+    else:
+        raid_level = client.get({"raid_name": raid["name"], "level": 1}, "raid_levels")
+    if check_health(player_info, raid_level["damage"]):
         date = datetime.now()
-        members = dungeon["members"]
-        members[player_info["name"]] = date
+        members = raid["members"]
+        members[player_info["name"]] = {"time": date, "level": 1}
         user_id = player_info["user_id"]
         _ = client.update(
-            {"name": player_info["current_state"]}, {"members": members}, "dungeons"
+            {"name": player_info["current_state"]}, {"members": members}, "raids"
         )
         _ = client.update(
             {"user_id": user_id},
             {
-                "health": player_info["health"] - dungeon["damage"],
-                "money": player_info["money"] + dungeon["treasure"],
+                "health": player_info["health"] - raid_level["damage"],
+                "money": player_info["money"] + raid_level["treasure"],
             },
             "players",
         )
         return await message.answer(
-            f"Ви почали захоплення підземелля. "
-            f'Повернутись у місто ви можете через {dungeon["base_time"]} секунд'
+            f"Ви почали захоплення рівня {raid_level['level']} рейду. "
+            f'Повернутись у місто ви можете через {raid_level["base_time"]} секунд'
         )
     return await message.answer(
         "У вас недостатньо здоров'я. Поверніться у місто, щоб вилікуватись"
