@@ -147,6 +147,16 @@ async def show_raid(player_info: dict, message: types.Message):
     client = Client(DB_PASSWORD)
     raid = client.get({"name": player_info["current_state"]}, "raids")
     text = f'Рейд - {raid["name"]}\n\n📖{raid["description"]}\n\n'
+    raid_levels = client.get_all(
+        "raid_levels", {"raid_name": player_info["current_state"]}
+    )
+    for raid_level in raid_levels:
+        text += (
+            f'{raid_level["level"]}. Рівень рейду - {raid_level["name"]}\n\n📖{raid_level["description"]}\n\n'
+            f'Буде отримано шкоди - {raid_level["damage"]}\n\n'
+            f'💵Буде отримано нагороди - {raid_level["treasure"]}\n\n'
+            f'⌚Час взяття підземелля - {raid_level["base_time"]} с'
+        )
     await message.answer(text)
 
 
