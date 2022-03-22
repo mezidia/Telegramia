@@ -66,7 +66,7 @@ city_objects = [
     {"name": "raid_info", "ukr_name": "Інформація про рейд", "function": show_raid},
     {
         "name": "raid_level_info",
-        "ukr_name": "Інформація про рівень рейду",
+        "ukr_name": "Інформація про наступний рівень рейду",
         "function": show_raid_level,
     },
 ]
@@ -117,7 +117,7 @@ async def show_city_info(city_name: str, chat_id: str, state=None):
         photo_url = f'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{dungeon["name"]}.jpg'
     elif raid := client.get({"name": city_name}, "raids"):
         markup.add(types.KeyboardButton("Інформація про рейд"))
-        markup.add(types.KeyboardButton("Інформація про рівень рейду"))
+        markup.add(types.KeyboardButton("Інформація про наступний рівень рейду"))
         markup.add(types.KeyboardButton("Увійти у рейд"))
         markup.add(types.KeyboardButton("Дороги"))
         photo_url = f"https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_Брісвель.jpg"
