@@ -118,7 +118,7 @@ async def show_city_info(city_name: str, chat_id: str, state=None):
     elif raid := client.get({"name": city_name}, "raids"):
         markup.add(types.KeyboardButton("Інформація про рейд"))
         markup.add(types.KeyboardButton("Інформація про рівень рейду"))
-        markup.add(types.KeyboardButton("Увійти до рейду"))
+        markup.add(types.KeyboardButton("Увійти у рейд"))
         markup.add(types.KeyboardButton("Дороги"))
         photo_url = f"https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_Брісвель.jpg"
     else:
