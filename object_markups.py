@@ -1,3 +1,4 @@
+from email import message_from_binary_file
 from aiogram import types
 
 from database import Client
@@ -157,19 +158,20 @@ async def show_raid_level(player_info: dict, message: types.Message):
         player_in_raid_info = raid_members[player_info["name"]]
     except KeyError:
         return await message.answer("Ви ще не увійшли у підземелля")
-    raid_level = client.get(
+    if raid_level := client.get(
         {
             "raid_name": player_info["current_state"],
-            "level": player_in_raid_info["level"],
+            "level": player_in_raid_info["level"] + 1,
         },
         "raid_levels",
-    )
-    text = (
-        f'Рівень рейду - {raid_level["name"]}\n\n📖{raid_level["description"]}\n\n'
-        f'Буде отримано шкоди - {raid_level["damage"]}\n\n'
-        f'⌚Час взяття підземелля - {raid_level["base_time"]} с'
-    )
-    await message.answer(text)
+    ):
+        text = (
+            f'Рівень рейду - {raid_level["name"]}\n\n📖{raid_level["description"]}\n\n'
+            f'Буде отримано шкоди - {raid_level["damage"]}\n\n'
+            f'⌚Час взяття підземелля - {raid_level["base_time"]} с'
+        )
+        return await message.answer(text)
+    return await message.answer("Більше рівнів немає")
 
 
 async def enter_raid(player_info: dict, message: types.Message):
