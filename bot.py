@@ -356,7 +356,7 @@ async def answer_road_choice(message: types.Message, state: FSMContext):
                 {"user_id": user_id},
                 {
                     "current_state": road["to_obj"],
-                    "energy": player["energy"] - road_energy,
+                    "energy": player["energy"] - road_energy + player["agility"] * 0.15,
                 },
                 "players",
             )

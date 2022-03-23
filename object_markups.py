@@ -1,4 +1,3 @@
-from email import message_from_binary_file
 from aiogram import types
 
 from database import Client
@@ -129,8 +128,12 @@ async def enter_dungeon(player_info: dict, message: types.Message):
         _ = client.update(
             {"user_id": user_id},
             {
-                "health": player_info["health"] - dungeon["damage"],
-                "money": player_info["money"] + dungeon["treasure"],
+                "health": player_info["health"]
+                - dungeon["damage"]
+                + player_info["strength"] * 0.15,
+                "money": player_info["money"]
+                + dungeon["treasure"]
+                + player_info["intuition"] * 0.15,
             },
             "players",
         )
@@ -210,8 +213,12 @@ async def enter_raid(player_info: dict, message: types.Message):
         _ = client.update(
             {"user_id": user_id},
             {
-                "health": player_info["health"] - raid_level["damage"],
-                "money": player_info["money"] + raid_level["treasure"],
+                "health": player_info["health"]
+                - raid_level["damage"]
+                + player_info["strength"] * 0.15,
+                "money": player_info["money"]
+                + raid_level["treasure"]
+                + player_info["intelligence"] * 0.15,
             },
             "players",
         )
