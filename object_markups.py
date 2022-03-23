@@ -155,7 +155,7 @@ async def show_raid(player_info: dict, message: types.Message):
             f'{raid_level["level"]}. Рівень рейду - {raid_level["name"]}\n\n📖{raid_level["description"]}\n\n'
             f'Буде отримано шкоди - {raid_level["damage"]}\n\n'
             f'💵Буде отримано нагороди - {raid_level["treasure"]}\n\n'
-            f'⌚Час взяття підземелля - {raid_level["base_time"]} с'
+            f'⌚Час взяття підземелля - {raid_level["base_time"]} с\n\n'
         )
     await message.answer(text)
 
@@ -194,15 +194,15 @@ async def enter_raid(player_info: dict, message: types.Message):
         if raid_level := client.get(
             {"raid_name": raid["name"], "level": level}, "raid_levels"
         ):
-            return raid_level
-
-        return await message.answer("Ви вже пройшли усі рівні рейду")
+            pass
+        else:
+            return await message.answer("Ви вже пройшли усі рівні рейду")
     else:
         raid_level = client.get({"raid_name": raid["name"], "level": 1}, "raid_levels")
     if check_health(player_info, raid_level["damage"]):
         date = datetime.now()
         members = raid["members"]
-        members[player_info["name"]] = {"time": date, "level": 1}
+        members[player_info["name"]] = {"time": date, "level": raid_level["level"]}
         user_id = player_info["user_id"]
         _ = client.update(
             {"name": player_info["current_state"]}, {"members": members}, "raids"
