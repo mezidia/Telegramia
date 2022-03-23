@@ -199,7 +199,7 @@ async def cancel_handler(message: types.Message, state: FSMContext) -> types.Mes
 
 
 @dp.message_handler(state=Player.nation)
-async def answer_repo_name_issue(
+async def answer_player_nation(
     message: types.Message, state: FSMContext
 ) -> types.Message:
     nation = message.text
@@ -224,7 +224,7 @@ async def answer_repo_name_issue(
 
 
 @dp.message_handler(state=Player.name)
-async def answer_repo_name_issue(
+async def answer_player_name(
     message: types.Message, state: FSMContext
 ) -> types.Message:
     name = message.text
@@ -235,7 +235,7 @@ async def answer_repo_name_issue(
 
 
 @dp.message_handler(state=Player.hero_class)
-async def answer_repo_name_issue(
+async def answer_player_class(
     message: types.Message, state: FSMContext
 ) -> types.Message:
     class_name = message.text
