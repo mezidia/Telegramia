@@ -1,6 +1,6 @@
 from database import Client
 
-from typing import Tuple, Union
+from typing import NoReturn, Tuple, Union
 from datetime import datetime, timedelta
 
 
@@ -99,6 +99,27 @@ def parse_purchase(text: str) -> Tuple[str, float]:
     item_list = text_list[1:-2]
     item = " ".join(item_list)
     return item, price
+
+
+def do_purchase(client: Client, player, items, price) -> NoReturn:
+    _ = client.update(
+        {"user_id": player["user_id"]},
+        {
+            "items": items,
+            "money": player["money"] - price,
+        },
+        "players",
+    )
+
+
+def smart_purchase(item_name: str, items: list, client: Client) -> Union[dict, bool]:
+    item_in_shop = client.get({"item_name": item_name}, "items")
+    type_items = client.get_all({"type": item_in_shop["type"]}, "items")
+    for item in type_items:
+        if item["name"] in items:
+            if item_in_shop["bonus"] > item["bonus"]:
+                return item
+    return False
 
 
 async def finish_state(state):

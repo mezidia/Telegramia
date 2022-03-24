@@ -1,9 +1,8 @@
 # TODO: write logics for raids and dungeons
 # TODO: create map image
 # TODO: make more separate files
-# TODO: add exp while travelling and taking raids and dungeons
 # TODO: handle buying new items
-# TODO: add effect from items in raids and dungeons
+# TODO: update level
 
 import logging
 
@@ -19,8 +18,10 @@ from utils import (
     check_characteristics,
     check_money,
     check_energy,
+    do_purchase,
     parse_purchase,
     finish_state,
+    smart_purchase,
 )
 from states import Player, CityObject, Item, Road, Horse
 from object_markups import (
@@ -296,13 +297,19 @@ async def answer_item_purchase(message: types.Message, state: FSMContext):
                 await message.answer("У вас вже є цей предмет")
             else:
                 await state.finish()
-                items.append(item)
-                _ = client.update(
-                    {"user_id": user_id},
-                    {"items": items, "money": player["money"] - price},
-                    "players",
-                )
-                await message.answer(f"Ви успішно купили {item}")
+                if items:
+                    if old_item := smart_purchase(item, items, client):
+                        items.append(item)
+                        items.remove(old_item["name"])
+                        price -= old_item["price"]
+                        await message.answer(f"Ви успішно купили {item}")
+                        do_purchase(client, player, items, price)
+                    else:
+                        await message.answer("У вас є кращий предмет такого ж типу")
+                else:
+                    items.append(item)
+                    await message.answer(f"Ви успішно купили {item}")
+                    do_purchase(client, player, items, price)
         else:
             await message.answer("У вас недостатньо грошей")
         return await show_city_info(player["current_state"], message.chat.id, state)
