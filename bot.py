@@ -18,6 +18,7 @@ from utils import (
     check_money,
     check_energy,
     do_purchase,
+    level_up,
     parse_purchase,
     finish_state,
     smart_purchase,
@@ -364,12 +365,15 @@ async def answer_road_choice(message: types.Message, state: FSMContext):
             await state.finish()
             if mount := player["mount"]:
                 road_energy -= mount["bonus"]
+            experience, level_to_add = level_up(player["experience"])
+            experience += road_energy * 0.35
             _ = client.update(
                 {"user_id": user_id},
                 {
                     "current_state": road["to_obj"],
+                    "level": player["level"] + level_to_add,
                     "energy": player["energy"] - road_energy + player["agility"] * 0.15,
-                    "experience": player["experience"] + road_energy * 0.35,
+                    "experience": experience,
                 },
                 "players",
             )

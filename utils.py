@@ -2,6 +2,7 @@ from database import Client
 
 from typing import NoReturn, Tuple, Union
 from datetime import datetime, timedelta
+from math import modf
 
 
 def check_money(player: dict, price: float) -> bool:
@@ -120,6 +121,14 @@ def smart_purchase(item_name: str, items: list, client: Client) -> Union[dict, b
             if item_in_shop["bonus"] > item["bonus"]:
                 return item
     return False
+
+
+def level_up(exp: float) -> Tuple[float, float]:
+    if exp > 100:
+        exp /= 100
+        return modf(exp)
+    return (exp, 0)
+    
 
 
 async def finish_state(state):
