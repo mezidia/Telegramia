@@ -328,15 +328,18 @@ async def answer_horse_purchase(message: types.Message, state: FSMContext):
         player = client.get({"user_id": user_id}, "players")
         horse, price = parse_purchase(text)
         if check_money(player, price):
-            player_mount = player["mount"]["name"]
-            if player_mount == horse:
+            player_mount = client.get({"name": player["mount"]["name"]}, "horses")
+            if player_mount["name"] == horse:
                 await message.answer("У вас вже є цей кінь")
             else:
                 await state.finish()
                 mount = client.get({"name": horse}, "horses")
                 _ = client.update(
                     {"user_id": user_id},
-                    {"mount": mount, "money": player["money"] - price},
+                    {
+                        "mount": mount,
+                        "money": player["money"] - price + player_mount["price"],
+                    },
                     "players",
                 )
                 await message.answer(f"Ви успішно купили {horse}")

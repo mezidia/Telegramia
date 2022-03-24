@@ -87,7 +87,7 @@ def apply_items(player_info: dict, client: Client) -> dict:
         "intelligence": player_info["intelligence"],
     }
     for item in player_info["items"]:
-        shop_item = client.get({"item_name": item}, "items")
+        shop_item = client.get({"name": item}, "items")
         char = shop_item["characteristic"]
         player_chars[char] += shop_item["bonus"]
     return player_chars
@@ -113,7 +113,7 @@ def do_purchase(client: Client, player, items, price) -> NoReturn:
 
 
 def smart_purchase(item_name: str, items: list, client: Client) -> Union[dict, bool]:
-    item_in_shop = client.get({"item_name": item_name}, "items")
+    item_in_shop = client.get({"name": item_name}, "items")
     type_items = client.get_all({"type": item_in_shop["type"]}, "items")
     for item in type_items:
         if item["name"] in items:
