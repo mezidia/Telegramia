@@ -114,7 +114,7 @@ def do_purchase(client: Client, player, items, price) -> NoReturn:
 
 def smart_purchase(item_name: str, items: list, client: Client) -> Union[dict, bool]:
     item_in_shop = client.get({"name": item_name}, "items")
-    type_items = client.get_all({"type": item_in_shop["type"]}, "items")
+    type_items = client.get_all("items", {"type": item_in_shop["type"]})
     for item in type_items:
         if item["name"] in items:
             if item_in_shop["bonus"] > item["bonus"]:
