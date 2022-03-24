@@ -1,6 +1,9 @@
 # TODO: write logics for raids and dungeons
 # TODO: create map image
 # TODO: make more separate files
+# TODO: add exp while travelling and taking raids and dungeons
+# TODO: handle buying new items
+# TODO: add effect from items in raids and dungeons
 
 import logging
 
@@ -357,6 +360,7 @@ async def answer_road_choice(message: types.Message, state: FSMContext):
                 {
                     "current_state": road["to_obj"],
                     "energy": player["energy"] - road_energy + player["agility"] * 0.15,
+                    "experience": player["experience"] + road_energy * 0.35,
                 },
                 "players",
             )

@@ -134,6 +134,7 @@ async def enter_dungeon(player_info: dict, message: types.Message):
                 "money": player_info["money"]
                 + dungeon["treasure"]
                 + player_info["intuition"] * 0.15,
+                "experience": player_info["experience"] + dungeon["treasure"] * 0.25,
             },
             "players",
         )
@@ -219,6 +220,8 @@ async def enter_raid(player_info: dict, message: types.Message):
                 "money": player_info["money"]
                 + raid_level["treasure"]
                 + player_info["intelligence"] * 0.15,
+                "experience": player_info["experience"]
+                + raid_level["treasure"] * 0.25 * raid_level["level"],
             },
             "players",
         )
