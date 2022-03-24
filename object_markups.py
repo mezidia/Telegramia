@@ -3,7 +3,13 @@ from aiogram import types
 from database import Client
 from config import DB_PASSWORD
 from states import Item, Road, Horse
-from utils import check_health, check_in_dungeon, check_in_raid, check_was_in_raid
+from utils import (
+    check_health,
+    check_in_dungeon,
+    check_in_raid,
+    check_was_in_raid,
+    apply_items,
+)
 
 from datetime import datetime
 
@@ -121,6 +127,7 @@ async def enter_dungeon(player_info: dict, message: types.Message):
         date = datetime.now()
         members = dungeon["members"]
         members[player_info["name"]] = date
+        player_chars = apply_items(player_info, client)
         user_id = player_info["user_id"]
         _ = client.update(
             {"name": player_info["current_state"]}, {"members": members}, "dungeons"
@@ -130,10 +137,10 @@ async def enter_dungeon(player_info: dict, message: types.Message):
             {
                 "health": player_info["health"]
                 - dungeon["damage"]
-                + player_info["strength"] * 0.15,
+                + player_chars["strength"] * 0.15,
                 "money": player_info["money"]
                 + dungeon["treasure"]
-                + player_info["intuition"] * 0.15,
+                + player_chars["intuition"] * 0.15,
                 "experience": player_info["experience"] + dungeon["treasure"] * 0.25,
             },
             "players",
@@ -206,6 +213,7 @@ async def enter_raid(player_info: dict, message: types.Message):
     if check_health(player_info, raid_level["damage"]):
         date = datetime.now()
         members = raid["members"]
+        player_chars = apply_items(player_info, client)
         members[player_info["name"]] = {"time": date, "level": raid_level["level"]}
         user_id = player_info["user_id"]
         _ = client.update(
@@ -216,10 +224,10 @@ async def enter_raid(player_info: dict, message: types.Message):
             {
                 "health": player_info["health"]
                 - raid_level["damage"]
-                + player_info["strength"] * 0.15,
+                + player_chars["strength"] * 0.15,
                 "money": player_info["money"]
                 + raid_level["treasure"]
-                + player_info["intelligence"] * 0.15,
+                + player_chars["intelligence"] * 0.15,
                 "experience": player_info["experience"]
                 + raid_level["treasure"] * 0.25 * raid_level["level"],
             },
