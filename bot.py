@@ -375,6 +375,13 @@ async def answer_road_choice(message: types.Message, state: FSMContext):
                 },
                 "players",
             )
+            _ = client.update(
+                {"name": road["name"]},
+                {
+                    "travelers": road["travelers"] + 1,
+                },
+                "roads",
+            )
         else:
             await message.answer("У вас недостатньо енергії")
         return await show_city_info(road["to_obj"], message.chat.id, state)
