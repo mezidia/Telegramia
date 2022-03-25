@@ -351,6 +351,13 @@ async def answer_horse_purchase(message: types.Message, state: FSMContext):
                     },
                     "players",
                 )
+                _ = client.update(
+                    {"name": mount["name"]},
+                    {
+                        "count": mount["count"] + 1,
+                    },
+                    "horses",
+                )
                 await message.answer(f"Ви успішно купили {horse}")
         else:
             await message.answer("У вас недостатньо грошей")
