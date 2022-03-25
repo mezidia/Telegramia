@@ -1,4 +1,3 @@
-# TODO: change lists to tuples
 from pymongo import results, MongoClient
 
 
@@ -41,7 +40,7 @@ class Client:
         except Exception as e:
             print('Error:', e)
 
-    def get_all(self, collection_name: str, query: dict = None) -> list:
+    def get_all(self, collection_name: str, query: dict = None) -> tuple:
         """
         Method for getting all data from collection
         :param collection_name: name of the collection
@@ -51,7 +50,7 @@ class Client:
         if query is None:
             query = {}
         try:
-            return self.db[collection_name].find(query)
+            return tuple(self.db[collection_name].find(query))
         except Exception as e:
             print('Error:', e)
 

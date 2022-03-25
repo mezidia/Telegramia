@@ -1,4 +1,3 @@
-# TODO: write logics for raids and dungeons
 # TODO: create map image
 # TODO: make more separate files
 
@@ -444,7 +443,6 @@ async def echo(message: types.Message, state: FSMContext):
             await state.finish()
             return await city_object["function"](player, message)
 
-    # TODO: change it to the states
     if text == "Назад":
         # If nothing will appear, condition is unnecessary
         return await show_city_info(player["current_state"], chat_id, state)
