@@ -313,6 +313,12 @@ async def answer_item_purchase(message: types.Message, state: FSMContext):
                     items.append(item)
                     await message.answer(f"Ви успішно купили {item}")
                     do_purchase(client, player, items, price)
+                item_in_db = client.get({"name": item}, "items")
+                _ = client.update(
+                    {"name": item_in_db["name"]},
+                    {"count": item_in_db["count"] + 1},
+                    "items",
+                )
         else:
             await message.answer("У вас недостатньо грошей")
         return await show_city_info(player["current_state"], message.chat.id, state)
