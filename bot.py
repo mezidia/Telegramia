@@ -209,6 +209,11 @@ async def answer_player_nation(
     telegram_name = message.from_user.username
     client = Client(DB_PASSWORD)
     country = client.get({"name": nation}, "countries")
+    _ = client.update(
+        {"name": country["name"]},
+        {"population": country["population"] + 1},
+        "countries",
+    )
     await state.update_data({"nation": nation})
     await state.update_data({"user_id": user_id})
     await state.update_data({"telegram_name": telegram_name})
