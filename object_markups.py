@@ -45,7 +45,9 @@ async def create_markup_for_shop(
     )
 
 
-async def create_recover_markup(characteristic: str) -> types.InlineKeyboardMarkup:
+async def create_recover_markup(
+    characteristic: str, text: str, message: types.Message
+) -> types.Message:
     markup = types.InlineKeyboardMarkup()
     markup.add(
         types.InlineKeyboardButton(
@@ -66,7 +68,10 @@ async def create_recover_markup(characteristic: str) -> types.InlineKeyboardMark
         )
     )
     markup.add(types.InlineKeyboardButton(text="Назад", callback_data="back"))
-    return markup
+    return await message.answer(
+        text,
+        reply_markup=markup,
+    )
 
 
 async def show_items(player_info: dict, message: types.Message) -> types.Message:
@@ -81,30 +86,30 @@ async def show_horses(player_info: dict, message: types.Message) -> types.Messag
     )
 
 
-async def enter_academy(player_info: dict, message: types.Message):
-    markup = await create_recover_markup("intelligence")
-    await message.answer(
+async def enter_academy(player_info: dict, message: types.Message) -> types.Message:
+    return await create_recover_markup(
+        "intelligence",
         f'Ви знаходитесь в академії міста {player_info["current_state"]}'
         f' і у вас {player_info["intelligence"]} інтелекту. Ви хочете провести навчання в академії?',
-        reply_markup=markup,
+        message,
     )
 
 
 async def enter_temple(player_info: dict, message: types.Message):
-    markup = await create_recover_markup("health")
-    await message.answer(
+    return await create_recover_markup(
+        "health",
         f'Ви знаходитесь у храмі міста {player_info["current_state"]}'
         f' і у вас {player_info["health"]} здоров\'я. Ви хочете відновити його?',
-        reply_markup=markup,
+        message,
     )
 
 
 async def enter_tavern(player_info: dict, message: types.Message):
-    markup = await create_recover_markup("energy")
-    await message.answer(
+    markup = await create_recover_markup(
+        "energy",
         f'Ви знаходитесь у таверні міста {player_info["current_state"]}'
         f' і у вас {player_info["energy"]} енергії. Ви хочете відновити її?',
-        reply_markup=markup,
+        message,
     )
 
 
