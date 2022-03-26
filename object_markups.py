@@ -1,4 +1,5 @@
 from aiogram import types
+from aiogram.dispatcher.filters.state import StatesGroupMeta
 
 from database import Client
 from config import DB_PASSWORD
@@ -14,30 +15,37 @@ from utils import (
 from datetime import datetime
 
 
-async def show_roads(player_info: dict, message: types.Message):
+async def show_roads(player_info: dict, message: types.Message) -> types.Message:
     client = Client(DB_PASSWORD)
-    if check_in_dungeon(player_info, client):
-        return await message.answer("Ви все ще проходите підземелля, потрібно зачекати")
-    if check_in_raid(player_info, client):
-        return await message.answer("Ви все ще проходите рейд, потрібно зачекати")
+    if check_in_dungeon(player_info, client) or check_in_raid(player_info, client):
+        return await message.answer("Ви все ще проходите завдання, потрібно зачекати")
     roads = client.get_all("roads", {"from_obj": player_info["current_state"]})
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     for road in roads:
         markup.add(types.KeyboardButton(f'{road["name"]}'))
     markup.add(types.KeyboardButton("Назад"))
     await Road.first()
-    await message.answer("Оберіть місце, куди хочете відправитись", reply_markup=markup)
+    return await message.answer(
+        "Оберіть місце, куди хочете відправитись", reply_markup=markup
+    )
 
 
-async def create_markup_for_shop(items: list):
+async def create_markup_for_shop(
+    collection_name: str, city_name: str, state: StatesGroupMeta, message: types.Message
+) -> types.ReplyKeyboardMarkup:
+    client = Client(DB_PASSWORD)
+    items = client.get_all(collection_name, {"city": city_name})
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     for item in items:
         markup.add(types.KeyboardButton(f'Купити {item["name"]} за {item["price"]}'))
     markup.add(types.KeyboardButton("Назад"))
-    return markup
+    await state.first()
+    return await message.answer(
+        "Оберіть предмет, який хочете купити", reply_markup=markup
+    )
 
 
-async def create_recover_markup(characteristic: str):
+async def create_recover_markup(characteristic: str) -> types.InlineKeyboardMarkup:
     markup = types.InlineKeyboardMarkup()
     markup.add(
         types.InlineKeyboardButton(
@@ -61,22 +69,16 @@ async def create_recover_markup(characteristic: str):
     return markup
 
 
-async def show_items(player_info: dict, message: types.Message):
-    client = Client(DB_PASSWORD)
-    items = client.get_all("items", {"city": player_info["current_state"]})
-    markup = await create_markup_for_shop(items)
-    await Item.first()
-    return await message.answer(
-        "Оберіть предмет, який хочете купити", reply_markup=markup
+async def show_items(player_info: dict, message: types.Message) -> types.Message:
+    return await create_markup_for_shop(
+        "items", player_info["current_state"], Item, message
     )
 
 
-async def show_horses(player_info: dict, message: types.Message):
-    client = Client(DB_PASSWORD)
-    horses = client.get_all("horses", {"city": player_info["current_state"]})
-    markup = await create_markup_for_shop(horses)
-    await Horse.first()
-    await message.answer("Оберіть предмет, який хочете купити", reply_markup=markup)
+async def show_horses(player_info: dict, message: types.Message) -> types.Message:
+    return await create_markup_for_shop(
+        "horses", player_info["current_state"], Horse, message
+    )
 
 
 async def enter_academy(player_info: dict, message: types.Message):
