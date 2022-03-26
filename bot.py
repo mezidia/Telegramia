@@ -442,9 +442,9 @@ async def create_player_handler(message: types.Message):
 
 @dp.message_handler(is_player=True, commands=["where"])
 async def send_place_info(message: types.Message):
+    client = Client(DB_PASSWORD)
     user_id = message.from_user.id
     chat_id = message.chat.id
-    client = Client(DB_PASSWORD)
     city_name = client.get({"user_id": user_id}, "players")
     await show_city_info(city_name["current_state"], chat_id)
 
@@ -471,10 +471,7 @@ async def echo(message: types.Message, state: FSMContext):
             await state.finish()
             return await city_object["function"](player, message)
 
-    if text == "Назад":
-        # If nothing will appear, condition is unnecessary
-        return await show_city_info(player["current_state"], chat_id, state)
-    await show_city_info(player["current_state"], chat_id, state)
+    return await show_city_info(player["current_state"], chat_id, state)
 
 
 if __name__ == "__main__":
