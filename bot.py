@@ -161,12 +161,12 @@ async def process_callback(callback_query: types.CallbackQuery):
                     },
                     "players",
                 )
-                city_name = client.get({"user_id": user_id}, "players")
+                player = client.get({"user_id": user_id}, "players")
                 await callback_query.answer(
                     f"Покупка здійснена! Ви збільшили {characteristic} на {value} одиниць"
                 )
                 return await show_city_info(
-                    city_name["current_state"], callback_query.from_user.id
+                    player["current_state"], callback_query.from_user.id
                 )
             return await bot.send_message(
                 callback_query.from_user.id,
@@ -180,9 +180,13 @@ async def process_callback(callback_query: types.CallbackQuery):
             callback_query.from_user.id, "Оберіть країну", reply_markup=markup
         )
     else:
-        city_name = client.get({"user_id": user_id}, "players")
+        player = client.get({"user_id": user_id}, "players")
+        class_ = client.get({"name": player["hero_class"]}, "classes")
+        client.update(
+            {"name": class_["name"]}, {"choices": class_["choices"] + 1}, "classes"
+        )
         return await show_city_info(
-            city_name["current_state"], callback_query.from_user.id
+            player["current_state"], callback_query.from_user.id
         )
 
 
@@ -256,7 +260,6 @@ async def answer_player_class(
     data = await state.get_data()
     await state.finish()
     text = await prepare_player_info(data)
-    client = Client(DB_PASSWORD)
     client.insert(data, "players")
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(
