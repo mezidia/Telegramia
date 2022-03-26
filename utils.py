@@ -103,7 +103,7 @@ def parse_purchase(text: str) -> Tuple[str, float]:
 
 
 def do_purchase(client: Client, player, items, price) -> NoReturn:
-    _ = client.update(
+    client.update(
         {"user_id": player["user_id"]},
         {
             "items": items,
@@ -128,7 +128,6 @@ def level_up(exp: float) -> Tuple[float, float]:
         exp /= 100
         return modf(exp)
     return (exp, 0)
-    
 
 
 async def finish_state(state):

@@ -129,10 +129,10 @@ async def enter_dungeon(player_info: dict, message: types.Message):
         members[player_info["name"]] = date
         player_chars = apply_items(player_info, client)
         user_id = player_info["user_id"]
-        _ = client.update(
+        client.update(
             {"name": player_info["current_state"]}, {"members": members}, "dungeons"
         )
-        _ = client.update(
+        client.update(
             {"user_id": user_id},
             {
                 "health": player_info["health"]
@@ -216,10 +216,10 @@ async def enter_raid(player_info: dict, message: types.Message):
         player_chars = apply_items(player_info, client)
         members[player_info["name"]] = {"time": date, "level": raid_level["level"]}
         user_id = player_info["user_id"]
-        _ = client.update(
+        client.update(
             {"name": player_info["current_state"]}, {"members": members}, "raids"
         )
-        _ = client.update(
+        client.update(
             {"user_id": user_id},
             {
                 "health": player_info["health"]

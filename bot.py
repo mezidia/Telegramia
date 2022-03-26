@@ -213,7 +213,7 @@ async def answer_player_nation(
     telegram_name = message.from_user.username
     client = Client(DB_PASSWORD)
     country = client.get({"name": nation}, "countries")
-    _ = client.update(
+    client.update(
         {"name": country["name"]},
         {"population": country["population"] + 1},
         "countries",
@@ -317,7 +317,7 @@ async def answer_item_purchase(message: types.Message, state: FSMContext):
                     await message.answer(f"Ви успішно купили {item}")
                     do_purchase(client, player, items, price)
                 item_in_db = client.get({"name": item}, "items")
-                _ = client.update(
+                client.update(
                     {"name": item_in_db["name"]},
                     {"count": item_in_db["count"] + 1},
                     "items",
@@ -346,7 +346,7 @@ async def answer_horse_purchase(message: types.Message, state: FSMContext):
             else:
                 await state.finish()
                 mount = client.get({"name": horse}, "horses")
-                _ = client.update(
+                client.update(
                     {"user_id": user_id},
                     {
                         "mount": mount,
@@ -354,7 +354,7 @@ async def answer_horse_purchase(message: types.Message, state: FSMContext):
                     },
                     "players",
                 )
-                _ = client.update(
+                client.update(
                     {"name": mount["name"]},
                     {
                         "count": mount["count"] + 1,
@@ -386,7 +386,7 @@ async def answer_road_choice(message: types.Message, state: FSMContext):
                 road_energy -= mount["bonus"]
             experience, level_to_add = level_up(player["experience"])
             experience += road_energy * 0.35
-            _ = client.update(
+            client.update(
                 {"user_id": user_id},
                 {
                     "current_state": road["to_obj"],
@@ -396,7 +396,7 @@ async def answer_road_choice(message: types.Message, state: FSMContext):
                 },
                 "players",
             )
-            _ = client.update(
+            client.update(
                 {"name": road["name"]},
                 {
                     "travelers": road["travelers"] + 1,
