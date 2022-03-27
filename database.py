@@ -6,14 +6,16 @@ class Client:
     Class for manipulating MongoDB cluster
     """
 
-    def __init__(self, password, db_name: str = 'Telegramia'):
+    def __init__(self, password, db_name: str = "Telegramia"):
         """
         Initializing client object with access to database
         :param password: password to account
         :param db_name: name of database in current cluster
         """
-        cluster = MongoClient(f'mongodb+srv://mezgoodle:{password}@telegramia.jkq5x.mongodb.net/'
-                              f'telegramia?retryWrites=true&w=majority')
+        cluster = MongoClient(
+            f"mongodb+srv://mezgoodle:{password}@telegramia.jkq5x.mongodb.net/"
+            f"telegramia?retryWrites=true&w=majority"
+        )
         self.db = cluster[db_name]
 
     def insert(self, data: dict, collection_name: str) -> results.InsertOneResult:
@@ -26,7 +28,7 @@ class Client:
         try:
             return self.db[collection_name].insert_one(data)
         except Exception as e:
-            print('Error:', e)
+            print("Error:", e)
 
     def get(self, query: dict, collection_name: str) -> dict:
         """
@@ -38,7 +40,7 @@ class Client:
         try:
             return self.db[collection_name].find_one(query)
         except Exception as e:
-            print('Error:', e)
+            print("Error:", e)
 
     def get_all(self, collection_name: str, query: dict = None) -> tuple:
         """
@@ -52,20 +54,22 @@ class Client:
         try:
             return tuple(self.db[collection_name].find(query))
         except Exception as e:
-            print('Error:', e)
+            print("Error:", e)
 
-    def update(self, query: dict, data: dict, collection_name: str) -> results.UpdateResult:
+    def update(
+        self, query: dict, data: dict, collection_name: str, type: str = "$set"
+    ) -> results.UpdateResult:
         """
         Method for updating data in collection
-        :param collection_name: name of the collection
+        :param collection_name: name of the collections
         :param query: dictionary with field name and value
         :param data: dictionary with the old field name in document and the new value
         :return: result of updating
         """
         try:
-            return self.db[collection_name].update_one(query, {'$set': data})
+            return self.db[collection_name].update_one(query, {type: data})
         except Exception as e:
-            print('Error:', e)
+            print("Error:", e)
 
     def delete(self, query: dict, collection_name: str) -> results.DeleteResult:
         """
@@ -77,4 +81,4 @@ class Client:
         try:
             return self.db[collection_name].delete_one(query)
         except Exception as e:
-            print('Error:', e)
+            print("Error:", e)
