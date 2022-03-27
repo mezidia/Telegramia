@@ -181,10 +181,7 @@ async def process_callback(callback_query: types.CallbackQuery):
         )
     else:
         player = client.get({"user_id": user_id}, "players")
-        class_ = client.get({"name": player["hero_class"]}, "classes")
-        client.update(
-            {"name": class_["name"]}, {"choices": class_["choices"] + 1}, "classes"
-        )
+        client.update({"name": player["hero_class"]}, {"choices": 1}, "classes", "$inc")
         return await show_city_info(
             player["current_state"], callback_query.from_user.id
         )
@@ -213,11 +210,7 @@ async def answer_player_nation(
     telegram_name = message.from_user.username
     client = Client(DB_PASSWORD)
     country = client.get({"name": nation}, "countries")
-    client.update(
-        {"name": country["name"]},
-        {"population": country["population"] + 1},
-        "countries",
-    )
+    client.update({"name": country["name"]}, {"population": 1}, "countries", "$inc")
     await state.update_data({"nation": nation})
     await state.update_data({"user_id": user_id})
     await state.update_data({"telegram_name": telegram_name})
@@ -316,12 +309,7 @@ async def answer_item_purchase(message: types.Message, state: FSMContext):
                     items.append(item)
                     await message.answer(f"Ви успішно купили {item}")
                     do_purchase(client, player, items, price)
-                item_in_db = client.get({"name": item}, "items")
-                client.update(
-                    {"name": item_in_db["name"]},
-                    {"count": item_in_db["count"] + 1},
-                    "items",
-                )
+                client.update({"name": item}, {"count": 1}, "items", "$inc")
         else:
             await message.answer("У вас недостатньо грошей")
         return await show_city_info(player["current_state"], message.chat.id, state)
@@ -356,10 +344,9 @@ async def answer_horse_purchase(message: types.Message, state: FSMContext):
                 )
                 client.update(
                     {"name": mount["name"]},
-                    {
-                        "count": mount["count"] + 1,
-                    },
+                    {"count": 1},
                     "horses",
+                    "$inc",
                 )
                 await message.answer(f"Ви успішно купили {horse}")
         else:
@@ -399,9 +386,10 @@ async def answer_road_choice(message: types.Message, state: FSMContext):
             client.update(
                 {"name": road["name"]},
                 {
-                    "travelers": road["travelers"] + 1,
+                    "travelers": 1,
                 },
                 "roads",
+                "$inc",
             )
         else:
             await message.answer("У вас недостатньо енергії")
