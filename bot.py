@@ -99,7 +99,7 @@ async def prepare_player_info(data):
         f'*{data["health"]}*\nЕнергія: *{data["energy"]}*\n\n💪Сила: *{data["strength"]}*\n⚡Спритність: *{data["agility"]}*\n'
         f'🎯Інтуїція: *{data["intuition"]}*\n🎓Інтелект: *{data["intelligence"]}*\n💟Клас: *{data["hero_class"]}*\n\n'
         f'🤝Нація: *{data["nation"]}*\n💰Гроші: *{data["money"]}*\n🎒Речі: *{items}*\n'
-        f'🐺Транспорт: *{data["mount"]["name"] if data["mount"]["name"] else "немає"}*\n'
+        f'🐺Транспорт: *{data["mount"]["name"] if data["mount"] else "немає"}*\n'
         f'\nПоточне місце: *{data["current_state"]}*'
     )
     return text
@@ -328,7 +328,10 @@ async def answer_horse_purchase(message: types.Message, state: FSMContext):
         player = client.get({"user_id": user_id}, "players")
         horse, price = parse_purchase(text)
         if check_money(player, price):
-            player_mount = client.get({"name": player["mount"]["name"]}, "horses")
+            try:
+                player_mount = client.get({"name": player["mount"]["name"]}, "horses")
+            except KeyError:
+                player_mount = {"name": "", "price": 0}
             if player_mount["name"] == horse:
                 await message.answer("У вас вже є цей кінь")
             else:
