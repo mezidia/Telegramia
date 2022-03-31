@@ -105,7 +105,7 @@ async def prepare_player_info(data):
     return text
 
 
-async def show_city_info(city_name: str, chat_id: str, state=None):
+async def show_city_info(city_name: str, chat_id: str, state=None) -> types.Message:
     client = Client(DB_PASSWORD)
     await finish_state(state)
     markup = types.ReplyKeyboardMarkup(
@@ -406,12 +406,25 @@ async def handle_commands(message: types.Message, text: str):
         "/create": create_player_handler,
         "/where": send_place_info,
         "/me": show_player_handler,
+        "/start": show_start_text,
+        "/help": show_help_text,
     }
     return await commands[text](message)
 
 
+@dp.message_handler(commands=["start"])
+async def show_start_text(message: types.Message) -> types.Message:
+    text = "Вітаю у текстовій грі <b>Telegramia</b>. Створіть <i>свого героя</i> за допомогою команди /create. Дізнайтесь, як грати, через команду /help"
+    return await message.answer(text, parse_mode="HTML")
+
+
+@dp.message_handler(is_player=True, commands=["help"])
+async def show_help_text(message: types.Message) -> types.Message:
+    pass
+
+
 @dp.message_handler(commands=["create"])
-async def create_player_handler(message: types.Message):
+async def create_player_handler(message: types.Message) -> types.Message:
     client = Client(DB_PASSWORD)
     user_id = message.from_user.id
     if client.get({"user_id": user_id}, "players") is not None:
@@ -432,7 +445,7 @@ async def create_player_handler(message: types.Message):
 
 
 @dp.message_handler(is_player=True, commands=["where"])
-async def send_place_info(message: types.Message):
+async def send_place_info(message: types.Message) -> types.Message:
     client = Client(DB_PASSWORD)
     user_id = message.from_user.id
     chat_id = message.chat.id
@@ -441,7 +454,7 @@ async def send_place_info(message: types.Message):
 
 
 @dp.message_handler(is_player=True, commands=["me"])
-async def show_player_handler(message: types.Message):
+async def show_player_handler(message: types.Message) -> types.Message:
     client = Client(DB_PASSWORD)
     user_id = message.from_user.id
     player = client.get({"user_id": user_id}, "players")
@@ -450,7 +463,7 @@ async def show_player_handler(message: types.Message):
 
 
 @dp.message_handler()
-async def echo(message: types.Message, state: FSMContext):
+async def echo(message: types.Message, state: FSMContext) -> types.Message:
     client = Client(DB_PASSWORD)
     user_id = message.from_user.id
     chat_id = message.chat.id
