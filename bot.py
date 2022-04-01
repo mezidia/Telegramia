@@ -122,7 +122,7 @@ async def show_city_info(city_name: str, chat_id: str, state=None) -> types.Mess
         markup.add(types.KeyboardButton("Інформація про наступний рівень рейду"))
         markup.add(types.KeyboardButton("Увійти у рейд"))
         markup.add(types.KeyboardButton("Дороги"))
-        photo_url = f"https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_Брісвель.jpg"
+        photo_url = f"https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{raid['name']}.jpg"
     else:
         photo_url = f"https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{city_name}.jpg"
         city = client.get({"name": city_name}, "cities")
