@@ -22,8 +22,7 @@ async def show_roads(player_info: dict, message: types.Message) -> types.Message
     roads = client.get_all("roads", {"from_obj": player_info["current_state"]})
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     for road in roads:
-        # TODO - add energy value and then parse road name
-        markup.add(types.KeyboardButton(road["name"]))
+        markup.add(types.KeyboardButton(f'{road["name"]} - {road["energy"]} енергії'))
     markup.add(types.KeyboardButton("Назад"))
     await Road.first()
     return await message.answer(

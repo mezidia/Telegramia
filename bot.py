@@ -18,6 +18,7 @@ from utils import (
     do_purchase,
     level_up,
     parse_purchase,
+    parse_road_name,
     finish_state,
     smart_purchase,
 )
@@ -361,7 +362,7 @@ async def answer_horse_purchase(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=Road.road_name)
 async def answer_road_choice(message: types.Message, state: FSMContext):
-    road_name = message.text
+    road_name = parse_road_name(message.text)
     if road_name == "Назад":
         return await echo(message, state)
     if not road_name.startswith("/"):

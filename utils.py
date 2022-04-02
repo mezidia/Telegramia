@@ -102,6 +102,12 @@ def parse_purchase(text: str) -> Tuple[str, float]:
     return item, price
 
 
+def parse_road_name(text: str) -> str:
+    text_list = text.split("-")
+    road_name = text_list[0].strip()
+    return road_name
+
+
 def do_purchase(client: Client, player, items, price) -> NoReturn:
     client.update(
         {"user_id": player["user_id"]},
