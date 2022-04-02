@@ -199,7 +199,8 @@ async def show_raid_level(player_info: dict, message: types.Message):
             f'Буде отримано шкоди - {raid_level["damage"]}\n\n'
             f'⌚Час взяття підземелля - {raid_level["base_time"]} с'
         )
-        return await message.answer(text)
+        photo_url = f"https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{raid_level['name']}.jpg"
+        return await message.answer_photo(photo_url, text)
     return await message.answer("Більше рівнів немає")
 
 
