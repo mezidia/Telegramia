@@ -23,6 +23,7 @@ async def show_city_info(city_name: str, chat_id: str, state=None) -> Message:
         photo_url = f"https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{city_name}.jpg"
         city = client.get({"name": city_name}, "cities")
         markup = city_markup.create_markup(city)
+    # photo_url = 'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_Брісвель.jpg'
     await CityObject.first()
     return await bot.send_photo(
         chat_id, photo_url, f"Ви знаходитесь у місті {city_name}", reply_markup=markup
