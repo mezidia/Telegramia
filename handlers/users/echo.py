@@ -3,11 +3,14 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 
 from loader import dp
+from .filters.is_player import IsPlayer
 from utils.db_api.database import Client
 from utils.city.objects import city_objects
 from utils.city.info import show_city_info
 from data.config import DB_PASSWORD
 
+
+dp.filters_factory.bind(IsPlayer, event_handlers=[dp.message_handlers])
 
 # Use state '*' if I need to handle all states
 @dp.message_handler(state="*", commands="cancel")
@@ -24,7 +27,7 @@ async def cancel_handler(message: Message, state: FSMContext) -> Message:
 
 
 @dp.message_handler()
-async def echo(message: Message, state: FSMContext) -> Message:
+async def echo(message: Message, state: FSMContext, is_player=True) -> Message:
     client = Client(DB_PASSWORD)
     user_id = message.from_user.id
     chat_id = message.chat.id

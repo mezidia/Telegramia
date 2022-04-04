@@ -1,6 +1,6 @@
 from aiogram import executor
 
-import middlewares, filters, handlers
+import middlewares, handlers
 
 from loader import dp, bot, storage
 from utils.set_bot_commands import set_default_commands
