@@ -1,44 +1,34 @@
-from aiogram import types
+from aiogram.types import Message
 from aiogram.dispatcher.filters.state import StatesGroupMeta
 
-from database import Client
-from config import DB_PASSWORD
-from states import Item, Road, Horse
-from utils import (
-    check_health,
-    check_in_dungeon,
-    check_in_raid,
-    check_was_in_raid,
-    apply_items,
-)
+from utils.db_api.database import Client
+from utils.city.checks import check_in_raid, check_in_dungeon, check_health, check_was_in_raid
+from utils.city.player_processes import apply_items
+from data.config import DB_PASSWORD
+from states import road, item, horse
+from keyboards.default import roads as roads_markup, items as items_markup
+from keyboards.inline import recover
 
 from datetime import datetime
 
 
-async def show_roads(player_info: dict, message: types.Message) -> types.Message:
+async def show_roads(player_info: dict, message: Message) -> Message:
     client = Client(DB_PASSWORD)
     if check_in_dungeon(player_info, client) or check_in_raid(player_info, client):
         return await message.answer("Ви все ще проходите завдання, потрібно зачекати")
     roads = client.get_all("roads", {"from_obj": player_info["current_state"]})
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    for road in roads:
-        markup.add(types.KeyboardButton(f'{road["name"]} - {road["energy"]} енергії'))
-    markup.add(types.KeyboardButton("Назад"))
-    await Road.first()
+    markup = roads_markup.create_markup(roads)
+    await road.Road.first()
     return await message.answer(
         "Оберіть місце, куди хочете відправитись", reply_markup=markup
     )
 
-
 async def create_markup_for_shop(
-    collection_name: str, city_name: str, state: StatesGroupMeta, message: types.Message
-) -> types.ReplyKeyboardMarkup:
+    collection_name: str, city_name: str, state: StatesGroupMeta, message: Message
+) -> Message:
     client = Client(DB_PASSWORD)
     items = client.get_all(collection_name, {"city": city_name})
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    for item in items:
-        markup.add(types.KeyboardButton(f'Купити {item["name"]} за {item["price"]}'))
-    markup.add(types.KeyboardButton("Назад"))
+    markup = items_markup.create_markup(items)
     await state.first()
     return await message.answer(
         "Оберіть предмет, який хочете купити", reply_markup=markup
@@ -46,47 +36,28 @@ async def create_markup_for_shop(
 
 
 async def create_recover_markup(
-    characteristic: str, text: str, message: types.Message
-) -> types.Message:
-    markup = types.InlineKeyboardMarkup()
-    markup.add(
-        types.InlineKeyboardButton(
-            text=f"Отримати 5 одиниць {characteristic} за 5 монет",
-            callback_data=f"5{characteristic}5",
-        )
-    )
-    markup.add(
-        types.InlineKeyboardButton(
-            text=f"Отримати 15 одиниць {characteristic} за 13 монет",
-            callback_data=f"15{characteristic}13",
-        )
-    )
-    markup.add(
-        types.InlineKeyboardButton(
-            text=f"Отримати 50 одиниць {characteristic} за 45 монет",
-            callback_data=f"50{characteristic}45",
-        )
-    )
-    markup.add(types.InlineKeyboardButton(text="Назад", callback_data="back"))
+    characteristic: str, text: str, message: Message
+) -> Message:
+    markup = recover.create_markup(characteristic)
     return await message.answer(
         text,
         reply_markup=markup,
     )
 
 
-async def show_items(player_info: dict, message: types.Message) -> types.Message:
+async def show_items(player_info: dict, message: Message) -> Message:
     return await create_markup_for_shop(
-        "items", player_info["current_state"], Item, message
+        "items", player_info["current_state"], item.Item, message
     )
 
 
-async def show_horses(player_info: dict, message: types.Message) -> types.Message:
+async def show_horses(player_info: dict, message: Message) -> Message:
     return await create_markup_for_shop(
-        "horses", player_info["current_state"], Horse, message
+        "horses", player_info["current_state"], horse.Horse, message
     )
 
 
-async def enter_academy(player_info: dict, message: types.Message) -> types.Message:
+async def enter_academy(player_info: dict, message: Message) -> Message:
     return await create_recover_markup(
         "intelligence",
         f'Ви знаходитесь в академії міста {player_info["current_state"]}'
@@ -95,7 +66,7 @@ async def enter_academy(player_info: dict, message: types.Message) -> types.Mess
     )
 
 
-async def enter_temple(player_info: dict, message: types.Message):
+async def enter_temple(player_info: dict, message: Message):
     return await create_recover_markup(
         "health",
         f'Ви знаходитесь у храмі міста {player_info["current_state"]}'
@@ -104,7 +75,7 @@ async def enter_temple(player_info: dict, message: types.Message):
     )
 
 
-async def enter_tavern(player_info: dict, message: types.Message):
+async def enter_tavern(player_info: dict, message: Message):
     markup = await create_recover_markup(
         "energy",
         f'Ви знаходитесь у таверні міста {player_info["current_state"]}'
@@ -113,7 +84,7 @@ async def enter_tavern(player_info: dict, message: types.Message):
     )
 
 
-async def show_dungeon(player_info: dict, message: types.Message):
+async def show_dungeon(player_info: dict, message: Message):
     client = Client(DB_PASSWORD)
     dungeon = client.get({"name": player_info["current_state"]}, "dungeons")
     text = (
@@ -125,7 +96,7 @@ async def show_dungeon(player_info: dict, message: types.Message):
     await message.answer(text)
 
 
-async def enter_dungeon(player_info: dict, message: types.Message):
+async def enter_dungeon(player_info: dict, message: Message):
     client = Client(DB_PASSWORD)
     if check_in_dungeon(player_info, client):
         return await message.answer("Ви вже у підземеллі")
@@ -161,7 +132,7 @@ async def enter_dungeon(player_info: dict, message: types.Message):
     )
 
 
-async def show_raid(player_info: dict, message: types.Message):
+async def show_raid(player_info: dict, message: Message):
     client = Client(DB_PASSWORD)
     raid = client.get({"name": player_info["current_state"]}, "raids")
     text = f'Рейд - {raid["name"]}\n\n📖{raid["description"]}\n\n'
@@ -178,7 +149,7 @@ async def show_raid(player_info: dict, message: types.Message):
     await message.answer(text)
 
 
-async def show_raid_level(player_info: dict, message: types.Message):
+async def show_raid_level(player_info: dict, message: Message):
     client = Client(DB_PASSWORD)
     raid = client.get({"name": player_info["current_state"]}, "raids")
     raid_members = raid["members"]
@@ -203,7 +174,7 @@ async def show_raid_level(player_info: dict, message: types.Message):
     return await message.answer("Більше рівнів немає")
 
 
-async def enter_raid(player_info: dict, message: types.Message):
+async def enter_raid(player_info: dict, message: Message):
     client = Client(DB_PASSWORD)
     if check_in_raid(player_info, client):
         return await message.answer("Ви вже у підземеллі")
@@ -248,3 +219,31 @@ async def enter_raid(player_info: dict, message: types.Message):
     return await message.answer(
         "У вас недостатньо здоров'я. Поверніться у місто, щоб вилікуватись"
     )
+
+
+
+city_objects = [
+    {"name": "market", "ukr_name": "Ринок", "function": show_items},
+    {"name": "academy", "ukr_name": "Академія", "function": enter_academy},
+    {"name": "temple", "ukr_name": "Храм", "function": enter_temple},
+    {"name": "tavern", "ukr_name": "Таверна", "function": enter_tavern},
+    {"name": "menagerie", "ukr_name": "Стойло", "function": show_horses},
+    {"name": "roads", "ukr_name": "Дороги", "function": show_roads},
+    {
+        "name": "dungeon_info",
+        "ukr_name": "Інформація про підземелля",
+        "function": show_dungeon,
+    },
+    {
+        "name": "dungeon_enter",
+        "ukr_name": "Увійти у підземелля",
+        "function": enter_dungeon,
+    },
+    {"name": "raid_enter", "ukr_name": "Увійти у рейд", "function": enter_raid},
+    {"name": "raid_info", "ukr_name": "Інформація про рейд", "function": show_raid},
+    {
+        "name": "raid_level_info",
+        "ukr_name": "Інформація про наступний рівень рейду",
+        "function": show_raid_level,
+    },
+]

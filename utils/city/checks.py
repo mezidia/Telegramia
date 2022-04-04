@@ -1,9 +1,7 @@
-from database import Client
-
-from typing import NoReturn, Tuple, Union
 from datetime import datetime, timedelta
-from math import modf
+from typing import Union
 
+from utils.db_api.database import Client
 
 def check_money(player: dict, price: float) -> bool:
     player_money = float(player["money"])
@@ -78,68 +76,3 @@ def check_energy(player: dict, energy_value: float, travel: bool = True) -> bool
     if travel and (mount := player["mount"]):
         energy_value -= mount["bonus"]
     return player_energy - energy_value >= 0
-
-
-def apply_items(player_info: dict, client: Client) -> dict:
-    player_chars = {
-        "strength": player_info["strength"],
-        "agility": player_info["agility"],
-        "intuition": player_info["intuition"],
-        "intelligence": player_info["intelligence"],
-    }
-    for item in player_info["items"]:
-        shop_item = client.get({"name": item}, "items")
-        char = shop_item["characteristic"]
-        player_chars[char] += shop_item["bonus"]
-    return player_chars
-
-
-def parse_purchase(text: str) -> Tuple[str, float]:
-    text_list = text.split(" ")
-    price = float(text_list[-1])
-    item_list = text_list[1:-2]
-    item = " ".join(item_list)
-    return item, price
-
-
-def parse_road_name(text: str) -> str:
-    text_list = text.split("-")
-    road_name = text_list[0].strip()
-    return road_name
-
-
-def do_purchase(client: Client, player, items, price) -> NoReturn:
-    client.update(
-        {"user_id": player["user_id"]},
-        {
-            "items": items,
-            "money": player["money"] - price,
-        },
-        "players",
-    )
-
-
-def smart_purchase(item_name: str, items: list, client: Client) -> Union[dict, bool]:
-    item_in_shop = client.get({"name": item_name}, "items")
-    type_items = client.get_all("items", {"type": item_in_shop["type"]})
-    for item in type_items:
-        if item["name"] in items:
-            if item_in_shop["bonus"] > item["bonus"]:
-                return item
-    return False
-
-
-def level_up(exp: float) -> Tuple[float, float]:
-    if exp > 100:
-        exp /= 100
-        return modf(exp)
-    return (exp, 0)
-
-
-async def finish_state(state):
-    try:
-        current_state = await state.get_state()
-        if current_state is not None:
-            await state.finish()
-    except AttributeError:
-        pass

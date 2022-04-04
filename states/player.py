@@ -19,19 +19,3 @@ class Player(StatesGroup):
     items = State()
     mount = State()
     current_state = State()
-
-
-class CityObject(StatesGroup):
-    city_object = State()
-
-
-class Item(StatesGroup):
-    item = State()
-
-
-class Horse(StatesGroup):
-    horse = State()
-
-
-class Road(StatesGroup):
-    road_name = State()

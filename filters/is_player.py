@@ -1,16 +1,17 @@
+from dataclasses import dataclass
+
 from aiogram import types
 from aiogram.dispatcher.filters import BoundFilter
 
-from database import Client
-from config import DB_PASSWORD
+from utils.db_api.database import Client
+from data.config import DB_PASSWORD
 
 
+@dataclass
 class IsPlayer(BoundFilter):
     key = 'is_player'
-
-    def __init__(self, is_player):
-        self.is_player = is_player
-
+    is_player: bool
+    
     async def check(self, message: types.Message) -> bool:
         client = Client(DB_PASSWORD)
         user_id = message.from_user.id
