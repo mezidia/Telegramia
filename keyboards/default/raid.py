@@ -1,4 +1,3 @@
-from pickletools import markobject
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 
@@ -10,4 +9,4 @@ def create_markup():
     markup.add(KeyboardButton("Інформація про наступний рівень рейду"))
     markup.add(KeyboardButton("Увійти у рейд"))
     markup.add(KeyboardButton("Дороги"))
-    return markobject
+    return markup
