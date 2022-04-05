@@ -2,8 +2,8 @@ import sys
 
 from unittest import TestCase
 
-from database import Client
-from config import DB_PASSWORD
+from utils.db_api.database import Client
+from data.config import DB_PASSWORD
 
 
 class Parent:
