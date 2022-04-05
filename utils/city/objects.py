@@ -4,6 +4,7 @@ from aiogram.dispatcher.filters.state import StatesGroupMeta
 from utils.db_api.database import Client
 from utils.city.checks import check_in_raid, check_in_dungeon, check_health, check_was_in_raid
 from utils.city.player_processes import apply_items
+from utils.misc.types import types
 from data.config import DB_PASSWORD
 from states import road, item, horse
 from keyboards.default import roads as roads_markup, items as items_markup
@@ -24,10 +25,13 @@ async def show_roads(player_info: dict, message: Message) -> Message:
     )
 
 async def create_markup_for_shop(
-    collection_name: str, city_name: str, state: StatesGroupMeta, message: Message
+    collection_name: str, city_name: str, state: StatesGroupMeta, message: Message, type: str = None
 ) -> Message:
     client = Client(DB_PASSWORD)
-    items = client.get_all(collection_name, {"city": city_name})
+    query = {"city": city_name}
+    if type:
+        query["type"] = type
+    items = client.get_all(collection_name, query)
     markup = items_markup.create_markup(items)
     await state.first()
     return await message.answer(
@@ -45,10 +49,16 @@ async def create_recover_markup(
     )
 
 
-async def show_items(player_info: dict, message: Message) -> Message:
+async def show_items(player_info: dict, message: Message, type: str) -> Message:
     return await create_markup_for_shop(
-        "items", player_info["current_state"], item.Item, message
+        "items", player_info["current_state"], item.Item, message, type
     )
+
+# TODO: do something with the variable
+async def show_item_types(player_info: dict, message: Message) -> Message:
+    await item.Item.first()
+    markup = items_markup.create_markup_for_types(types.keys())
+    return await message.answer("Оберіть тип предмету", reply_markup=markup)
 
 
 async def show_horses(player_info: dict, message: Message) -> Message:
@@ -223,7 +233,7 @@ async def enter_raid(player_info: dict, message: Message):
 
 
 city_objects = [
-    {"name": "market", "ukr_name": "Ринок", "function": show_items},
+    {"name": "market", "ukr_name": "Ринок", "function": show_item_types},
     {"name": "academy", "ukr_name": "Академія", "function": enter_academy},
     {"name": "temple", "ukr_name": "Храм", "function": enter_temple},
     {"name": "tavern", "ukr_name": "Таверна", "function": enter_tavern},
