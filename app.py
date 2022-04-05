@@ -5,7 +5,6 @@ import middlewares, handlers
 from loader import dp, bot, storage
 from utils.set_bot_commands import set_default_commands
 # TODO: create map image
-# TODO: make more separate files
 # TODO: change images sizes
 
 async def on_startup(dispatcher):
