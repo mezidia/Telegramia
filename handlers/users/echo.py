@@ -26,8 +26,8 @@ async def cancel_handler(message: Message, state: FSMContext) -> Message:
     return await message.reply("Реєстрація зупинена.")
 
 
-@dp.message_handler()
-async def echo(message: Message, state: FSMContext, is_player=True) -> Message:
+@dp.message_handler(is_player=True)
+async def echo(message: Message, state: FSMContext) -> Message:
     client = Client(DB_PASSWORD)
     user_id = message.from_user.id
     chat_id = message.chat.id
