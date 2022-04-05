@@ -21,5 +21,4 @@ def create_markup(characteristic: str):
             callback_data=f"50{characteristic}45",
         )
     )
-    markup.add(InlineKeyboardButton(text="Назад", callback_data="back"))
     return markup
