@@ -4,12 +4,11 @@ from aiogram.dispatcher import FSMContext
 from loader import dp
 from utils.db_api.database import Client
 from utils.player.info import prepare_player_info
-from keyboards.default import general
+from keyboards.default.general import create_markup, delete_markup
 from keyboards.inline.hero_choice import hero_choice_markup
 from states.player import Player
 from data.config import DB_PASSWORD
 
-# TODO: delete markup after user choose country
 
 @dp.message_handler(commands=["create"])
 async def create_player_handler(message: Message) -> Message:
@@ -25,7 +24,7 @@ async def create_player_handler(message: Message) -> Message:
         "великих держав і ще багато чого іншого...Скоріше починай свою подорож. Для початку обери країну, "
         "у яку відправишся, щоб підкорювати цей світ"
     )
-    markup = await general.create_markup("countries", "name")
+    markup = await create_markup("countries", "name")
     await Player.nation.set()
     await message.answer_photo(
         photo_url, text, reply_markup=markup
@@ -55,7 +54,8 @@ async def answer_player_nation(
     await state.update_data({"current_state": country["capital"]})
     await message.answer(country["description"])
     await Player.name.set()
-    return await message.answer("Напиши, як тебе звати")
+    markup = await delete_markup()
+    return await message.answer("Напиши, як тебе звати", reply_markup=markup)
 
 
 @dp.message_handler(state=Player.name)
@@ -64,7 +64,7 @@ async def answer_player_name(
 ) -> Message:
     name = message.text
     await state.update_data({"name": name})
-    markup = await general.create_markup("classes", "name")
+    markup = await create_markup("classes", "name")
     await Player.hero_class.set()
     return await message.answer("Обери свій клас", reply_markup=markup)
 

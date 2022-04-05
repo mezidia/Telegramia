@@ -6,6 +6,7 @@ from loader import dp, bot, storage
 from utils.set_bot_commands import set_default_commands
 # TODO: create map image
 # TODO: change images sizes
+# TODO: make async methods
 
 async def on_startup(dispatcher):
     await set_default_commands(dispatcher)

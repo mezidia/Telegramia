@@ -12,6 +12,8 @@ from utils.city.parsers import parse_purchase
 from utils.misc import commands
 from utils.city.info import show_city_info
 
+# Show items by types
+
 
 @dp.message_handler(state=Item.item)
 async def answer_item_purchase(message: Message, state: FSMContext):
