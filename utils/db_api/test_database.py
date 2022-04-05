@@ -2,7 +2,7 @@ import sys
 
 from unittest import TestCase
 
-from utils.db_api.database import Client
+from .database import Client
 from data import config
 
 
