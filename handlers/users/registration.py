@@ -47,7 +47,7 @@ async def answer_player_nation(
     await state.update_data({"experience": 0.0})
     await state.update_data({"money": 100.0})
     await state.update_data({"items": []})
-    await state.update_data({"mount": {"name": ""}})
+    await state.update_data({"mount": {}})
     await state.update_data({"health": 100.0})
     await state.update_data({"energy": 60.0})
     await state.update_data({"current_state": country["capital"]})
