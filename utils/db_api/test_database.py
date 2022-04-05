@@ -1,13 +1,13 @@
 import sys
+import os
 
 from unittest import TestCase
 
 from .database import Client
-from data import config
 
 
 class Parent:
-    client = Client(config.DB_PASSWORD, 'Tests')
+    client = Client(os.getenv('DB_PASSWORD'), 'Tests')
     full_data = {'test_token': 'test_token' + sys.version, 'test_id': 'test_id'}
     data_with_id = {'test_id': 'test_id'}
 
