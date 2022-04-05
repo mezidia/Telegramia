@@ -7,7 +7,7 @@ from utils.city.info import show_city_info
 from utils.characteristics.characterstics import characteristics
 from data.config import DB_PASSWORD
 from states.player import Player
-from keyboards.default import general
+from keyboards.default.general import create_markup
 
 @dp.callback_query_handler(lambda c: c.data)
 async def process_callback(callback_query: CallbackQuery):
@@ -43,7 +43,7 @@ async def process_callback(callback_query: CallbackQuery):
     if callback_data == "No":
         client.delete({"user_id": user_id}, "players")
         await Player.nation.set()
-        markup = await general.create_keyboard("countries", "name")
+        markup = await create_markup("countries", "name")
         return await bot.send_message(
             callback_query.from_user.id, "Оберіть країну", reply_markup=markup
         )
