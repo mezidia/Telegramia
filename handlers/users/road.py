@@ -26,10 +26,10 @@ async def answer_road_choice(message: Message, state: FSMContext):
         road_energy = float(road["energy"])
         if check_energy(player, road_energy):
             await state.finish()
-            if mount := player["mount"]:
-                road_energy -= mount["bonus"]
             experience, level_to_add = level_up(player["experience"])
             experience += road_energy * 0.35
+            if mount := player["mount"]:
+                road_energy -= mount["bonus"]
             client.update(
                 {"user_id": user_id},
                 {
