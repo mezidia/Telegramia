@@ -22,6 +22,6 @@ async def answer_city_object(message: Message, state: FSMContext):
         for city_object in city_objects:
             if city_object["ukr_name"] == text:
                 await state.finish()
-                return await city_object["function"](player, message)
+                return await city_object["function"](player_info=player, message=message)
     else:
         return await commands.handle_commands(message, text)

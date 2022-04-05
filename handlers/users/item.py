@@ -9,10 +9,28 @@ from data.config import DB_PASSWORD
 from utils.city.purchase import smart_purchase, do_purchase
 from utils.city.checks import check_money
 from utils.city.parsers import parse_purchase
-from utils.misc import commands
+from utils.city.objects import show_item_types, show_items
+from utils.misc import commands, types
 from utils.city.info import show_city_info
 
-# Show items by types
+
+@dp.message_handler(state=Item.type)
+async def answer_item_type(message: Message, state: FSMContext):
+    text = message.text
+    if text == "Назад":
+        return await echo(message, state)
+    if not text.startswith("/"):
+        try:
+            type = types.types[text]
+        except KeyError:
+            await message.answer("Невірний тип предмету")
+            return await show_item_types(None, message)
+        client = Client(DB_PASSWORD)
+        user_id = message.from_user.id
+        player = client.get({"user_id": user_id}, "players")
+        return await show_items(player, message, type)
+    else:
+        return await commands.handle_commands(message, text)
 
 
 @dp.message_handler(state=Item.item)
