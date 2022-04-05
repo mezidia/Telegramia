@@ -7,8 +7,6 @@ from utils.set_bot_commands import set_default_commands
 # TODO: create map image
 # TODO: make more separate files
 # TODO: change images sizes
-# TODO: apply filters
-# TODO: make keyboards one time
 
 async def on_startup(dispatcher):
     await set_default_commands(dispatcher)
