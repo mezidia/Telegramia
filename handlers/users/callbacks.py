@@ -9,6 +9,7 @@ from data.config import DB_PASSWORD
 from states.player import Player
 from keyboards.default.general import create_markup
 
+# TODO: delete callback "Назад" from recover keyboards
 @dp.callback_query_handler(lambda c: c.data)
 async def process_callback(callback_query: CallbackQuery):
     user_id = callback_query.from_user.id
