@@ -9,6 +9,8 @@ from keyboards.inline.hero_choice import hero_choice_markup
 from states.player import Player
 from data.config import DB_PASSWORD
 
+# TODO: delete markup after user choose country
+
 @dp.message_handler(commands=["create"])
 async def create_player_handler(message: Message) -> Message:
     client = Client(DB_PASSWORD)
