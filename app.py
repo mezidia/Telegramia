@@ -7,7 +7,6 @@ from utils.set_bot_commands import set_default_commands
 # TODO: create map image
 # TODO: change images sizes
 # TODO: make async methods
-# TODO: write in handlers custom filters
 
 async def on_startup(dispatcher):
     await set_default_commands(dispatcher)
