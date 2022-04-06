@@ -2,5 +2,5 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 
 class Item(StatesGroup):
-    type = State()
     item = State()
+    type = State()
