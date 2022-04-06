@@ -16,6 +16,7 @@ from keyboards.inline.callback_datas import hero_callback, help_callback, buy_ca
 @dp.callback_query_handler(buy_callback.filter(characteristic=characteristics))
 async def recover_callback(call: CallbackQuery):
     user_id = call.from_user.id
+    await call.answer()
     await apply_recover(user_id, call, call.data)
 
 
@@ -44,14 +45,14 @@ async def reject_registration(call: CallbackQuery):
     return await call.message.answer("Оберіть країну", reply_markup=markup)
 
 # TODO: problem here when user clicks button after another keyboard
-@dp.callback_query_handler(help_callback.filter(method=["forward", "backward"]))
+@dp.callback_query_handler(text_contains="read")
 async def manual_page_callback(call: CallbackQuery):
-    await call.answer(cache_time=10)
+    await call.answer()
     page = int(call.data.split(":")[-1])
     return await call.message.edit_text(help_text[page], reply_markup=create_help_markup(page))
 
 
 @dp.callback_query_handler(text="close")
 async def close_manual_page(call: CallbackQuery):
-    await call.answer(cache_time=60)
+    await call.answer()
     await call.message.delete()

@@ -7,8 +7,6 @@ from data.config import DB_PASSWORD
 
 
 async def apply_recover(user_id: str, call: CallbackQuery, callback_data: str):
-    await call.answer(cache_time=10)
-
     client = Client(DB_PASSWORD)
     _, value, characteristic, price = callback_data.split(":")
 
