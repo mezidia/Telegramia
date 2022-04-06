@@ -10,7 +10,7 @@ def create_markup(current_page: int):
         markup.insert(
             InlineKeyboardButton(
                 text="Назад ⬅️",
-                callback_data=help_callback.new(method="backward", page=current_page-1),
+                callback_data=help_callback.new(page=current_page-1),
             )
         )
     markup.insert(
@@ -23,7 +23,7 @@ def create_markup(current_page: int):
         markup.insert(
             InlineKeyboardButton(
                 text="Далі ➡️",
-                callback_data=help_callback.new(method="forward", page=current_page+1),
+                callback_data=help_callback.new(page=current_page+1),
             )
         )
     return markup
