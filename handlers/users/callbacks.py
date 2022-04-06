@@ -10,7 +10,7 @@ from data.config import DB_PASSWORD
 from states.player import Player
 from keyboards.default.general import create_markup
 from keyboards.inline.help_information import create_markup as create_help_markup
-from keyboards.inline.callback_datas import hero_callback, help_callback, buy_callback
+from keyboards.inline.callback_datas import hero_callback, buy_callback
 
 
 @dp.callback_query_handler(buy_callback.filter(characteristic=characteristics))
