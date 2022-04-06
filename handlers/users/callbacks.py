@@ -43,7 +43,7 @@ async def reject_registration(call: CallbackQuery):
     markup = await create_markup("countries", "name")
     return await call.message.answer("Оберіть країну", reply_markup=markup)
 
-
+# TODO: problem here when user clicks button after another keyboard
 @dp.callback_query_handler(help_callback.filter(method=["forward", "backward"]))
 async def manual_page_callback(call: CallbackQuery):
     await call.answer(cache_time=10)
