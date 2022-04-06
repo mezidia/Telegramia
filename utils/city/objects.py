@@ -56,7 +56,7 @@ async def show_items(player_info: dict, message: Message, type: str) -> Message:
 
 # TODO: do something with the variable
 async def show_item_types(player_info: dict, message: Message) -> Message:
-    await item.Item.first()
+    await item.Item.type.set()
     markup = items_markup.create_markup_for_types(types.keys())
     return await message.answer("Оберіть тип предмету", reply_markup=markup)
 
