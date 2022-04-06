@@ -7,25 +7,13 @@ from utils.city.recover import apply_recover
 from data.config import DB_PASSWORD
 from states.player import Player
 from keyboards.default.general import create_markup
-from keyboards.inline.callback_datas import buy_callback, hero_callback
+from keyboards.inline.callback_datas import hero_callback
 
 
-@dp.callback_query_handler(buy_callback.filter(characteristic="energy"))
-async def increase_energy(call: CallbackQuery, callback_data: dict):
+@dp.callback_query_handler(text_contains="recover")
+async def recover_callback(call: CallbackQuery):
     user_id = call.from_user.id
-    await apply_recover(user_id, call, callback_data)
-    
-
-@dp.callback_query_handler(buy_callback.filter(characteristic="health"))
-async def increase_health(call: CallbackQuery, callback_data: dict):
-    user_id = call.from_user.id
-    await apply_recover(user_id, call, callback_data)
-
-
-@dp.callback_query_handler(buy_callback.filter(characteristic="intelligence"))
-async def increase_intelligence(call: CallbackQuery, callback_data: dict):
-    user_id = call.from_user.id
-    await apply_recover(user_id, call, callback_data)
+    await apply_recover(user_id, call, call.data)
 
 
 @dp.callback_query_handler(hero_callback.filter(choice="yes"))

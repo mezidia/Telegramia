@@ -6,13 +6,11 @@ from utils.city.info import show_city_info
 from data.config import DB_PASSWORD
 
 
-async def apply_recover(user_id: str, call: CallbackQuery, callback_data: dict):
+async def apply_recover(user_id: str, call: CallbackQuery, callback_data: str):
     await call.answer(cache_time=60)
 
     client = Client(DB_PASSWORD)
-    value = callback_data.get("quantity")
-    price = callback_data.get("price")
-    characteristic = callback_data.get("characteristic")
+    _, value, characteristic, price = callback_data.split(":")
 
     player = client.get({"user_id": user_id}, "players")
     if check_money(player, float(price)) and check_characteristics(
