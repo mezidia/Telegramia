@@ -7,6 +7,7 @@ from utils.set_bot_commands import set_default_commands
 # TODO: create map image
 # TODO: change images sizes
 # TODO: make async methods
+# TODO: add emojies in inline keyboards
 
 async def on_startup(dispatcher):
     await set_default_commands(dispatcher)
