@@ -1,3 +1,4 @@
+from . import cancel
 from . import registration
 from . import start
 from . import player

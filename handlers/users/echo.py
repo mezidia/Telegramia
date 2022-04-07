@@ -12,19 +12,6 @@ from data.config import DB_PASSWORD
 
 dp.filters_factory.bind(IsPlayer, event_handlers=[dp.message_handlers])
 
-# Use state '*' if I need to handle all states
-@dp.message_handler(state="*", commands="cancel")
-@dp.message_handler(Text(equals="cancel", ignore_case=True), state="*")
-async def cancel_handler(message: Message, state: FSMContext) -> Message:
-    """
-    Allow user to cancel any action
-    """
-    current_state = await state.get_state()
-    if current_state is None:
-        return await message.reply("Процес реєстрації не починався.")
-    await state.finish()
-    return await message.reply("Реєстрація зупинена.")
-
 
 @dp.message_handler(is_player=True)
 async def echo(message: Message, state: FSMContext) -> Message:
