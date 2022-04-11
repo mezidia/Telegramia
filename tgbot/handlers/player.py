@@ -25,5 +25,5 @@ async def show_player_handler(message: Message) -> Message:
 
 
 def register_player(dp: Dispatcher):
-    dp.register_message_handler(send_place_info, is_player=True, commands=["where"])
-    dp.register_message_handler(show_player_handler, is_player=True, commands=["me"])
+    dp.register_message_handler(send_place_info, is_player=True, commands=["where"], state="*")
+    dp.register_message_handler(show_player_handler, is_player=True, commands=["me"], state="*")

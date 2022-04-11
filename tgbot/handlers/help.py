@@ -10,4 +10,4 @@ async def show_help_text(message: Message) -> Message:
 
 
 def register_help_text(dp: Dispatcher):
-    dp.register_message_handler(show_help_text, CommandHelp())
+    dp.register_message_handler(show_help_text, CommandHelp(), state="*")

@@ -19,56 +19,50 @@ async def answer_item_type(message: Message, state: FSMContext):
     text = message.text
     if text == "Назад":
         return await echo(message, state)
-    if not text.startswith("/"):
-        try:
-            type_ = types[text]
-        except KeyError:
-            await message.answer("Невірний тип предмету")
-            return await show_item_types({}, message)
-        config: Config = message.bot.get('config')
-        client = Client(config.db.password)
-        user_id = message.from_user.id
-        player = client.get({"user_id": user_id}, "players")
-        return await show_items(player, message, type_)
-    else:
-        return await handle_commands(message, text)
+    try:
+        type_ = types[text]
+    except KeyError:
+        await message.answer("Невірний тип предмету")
+        return await show_item_types({}, message)
+    config: Config = message.bot.get('config')
+    client = Client(config.db.password)
+    user_id = message.from_user.id
+    player = client.get({"user_id": user_id}, "players")
+    return await show_items(player, message, type_)
 
 
 async def answer_item_purchase(message: Message, state: FSMContext):
     text = message.text
     if text == "Назад":
         return await echo(message, state)
-    if not text.startswith("/"):
-        config: Config = message.bot.get('config')
-        client = Client(config.db.password)
-        user_id = message.from_user.id
-        player = client.get({"user_id": user_id}, "players")
-        item, price = parse_purchase(text)
-        if check_money(player, price):
-            items = player["items"]
-            if item in items:
-                await message.answer("У вас вже є цей предмет")
-            else:
-                await state.finish()
-                if items:
-                    if old_item := smart_purchase(item, items, client):
-                        items.append(item)
-                        items.remove(old_item["name"])
-                        price -= old_item["price"]
-                        await message.answer(f"Ви успішно купили {item}")
-                        do_purchase(client, player, items, price)
-                    else:
-                        await message.answer("У вас є кращий предмет такого ж типу")
-                else:
+    config: Config = message.bot.get('config')
+    client = Client(config.db.password)
+    user_id = message.from_user.id
+    player = client.get({"user_id": user_id}, "players")
+    item, price = parse_purchase(text)
+    if check_money(player, price):
+        items = player["items"]
+        if item in items:
+            await message.answer("У вас вже є цей предмет")
+        else:
+            await state.finish()
+            if items:
+                if old_item := smart_purchase(item, items, client):
                     items.append(item)
+                    items.remove(old_item["name"])
+                    price -= old_item["price"]
                     await message.answer(f"Ви успішно купили {item}")
                     do_purchase(client, player, items, price)
-                client.update({"name": item}, {"count": 1}, "items", "$inc")
-        else:
-            await message.answer("У вас недостатньо грошей")
-        return await show_city_info(player["current_state"], message, state)
+                else:
+                    await message.answer("У вас є кращий предмет такого ж типу")
+            else:
+                items.append(item)
+                await message.answer(f"Ви успішно купили {item}")
+                do_purchase(client, player, items, price)
+            client.update({"name": item}, {"count": 1}, "items", "$inc")
     else:
-        return await handle_commands(message, text)
+        await message.answer("У вас недостатньо грошей")
+    return await show_city_info(player["current_state"], message, state)
 
 
 def register_item_answers(dp: Dispatcher):

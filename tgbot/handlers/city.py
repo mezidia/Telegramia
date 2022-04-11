@@ -14,17 +14,14 @@ async def answer_city_object(message: Message, state: FSMContext):
     text = message.text
     if text == "Назад":
         return await echo(message, state)
-    if not text.startswith("/"):
-        config: Config = message.bot.get('config')
-        client = Client(config.db.password)
-        user_id = message.from_user.id
-        player = client.get({"user_id": user_id}, "players")
-        for city_object in city_objects:
-            if city_object["ukr_name"] == text:
-                await state.finish()
-                return await city_object["function"](player_info=player, message=message)
-    else:
-        return await handle_commands(message, text)
+    config: Config = message.bot.get('config')
+    client = Client(config.db.password)
+    user_id = message.from_user.id
+    player = client.get({"user_id": user_id}, "players")
+    for city_object in city_objects:
+        if city_object["ukr_name"] == text:
+            await state.finish()
+            return await city_object["function"](player_info=player, message=message)
 
 
 def register_city_object(dp: Dispatcher):

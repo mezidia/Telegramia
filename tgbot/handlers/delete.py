@@ -13,4 +13,4 @@ async def delete_handler(message: Message) -> Message:
 
 
 def register_delete_handler(dp: Dispatcher):
-    dp.register_message_handler(delete_handler, commands=["delete"])
+    dp.register_message_handler(delete_handler, commands=["delete"], state='*')

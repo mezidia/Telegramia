@@ -13,4 +13,4 @@ async def show_start_text(message: types.Message) -> types.Message:
 
 
 def register_start(dp: Dispatcher):
-    dp.register_message_handler(show_start_text, CommandStart())
+    dp.register_message_handler(show_start_text, CommandStart(), state="*")

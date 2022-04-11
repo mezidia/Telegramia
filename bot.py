@@ -35,17 +35,17 @@ def register_all_filters(dp):
 
 def register_all_handlers(dp):
     handlers = [
+        register_player,
+        register_start,
         register_cancel,
         register_registration,
-        register_start,
         register_help_text,
         register_delete_handler,
         register_road,
         register_answer_horse,
-        register_player,
         register_item_answers,
-        register_callbacks,
         register_city_object,
+        register_callbacks,
         register_echo,
         register_error,
     ]

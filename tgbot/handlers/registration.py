@@ -89,7 +89,7 @@ async def answer_player_class(
 
 
 def register_registration(dp: Dispatcher):
-    dp.register_message_handler(create_player_handler, commands=["create"])
+    dp.register_message_handler(create_player_handler, commands=["create"], state="*")
     dp.register_message_handler(answer_player_nation, state=Player.nation)
     dp.register_message_handler(answer_player_name, state=Player.name)
     dp.register_message_handler(answer_player_class, state=Player.hero_class)

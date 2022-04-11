@@ -23,4 +23,4 @@ async def echo(message: Message, state: FSMContext) -> Message:
 
 
 def register_echo(dp: Dispatcher):
-    dp.register_message_handler(echo, is_player=True)
+    dp.register_message_handler(echo, is_player=True, state="*")
