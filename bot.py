@@ -75,7 +75,7 @@ async def main():
     register_all_filters(dp)
     register_all_handlers(dp)
 
-    await set_default_commands(bot)
+    await set_all_default_commands(bot)
 
     # start
     try:
