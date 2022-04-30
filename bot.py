@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 def register_all_middlewares(dp):
     # TODO: set antispamm middleware
+    # TODO: set ACL middleware
     pass
 
 
