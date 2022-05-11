@@ -11,8 +11,9 @@ from tgbot.misc.player_processes import level_up
 from tgbot.misc.city import show_city_info
 from tgbot.misc.commands import handle_commands
 from tgbot.handlers.echo import echo
+from loader import dp
 
-
+@dp.message_handler(state=Road.road_name)
 async def answer_road_choice(message: Message, state: FSMContext):
     road_name = parse_road_name(message.text)
     if road_name == "Назад":
@@ -50,7 +51,3 @@ async def answer_road_choice(message: Message, state: FSMContext):
     else:
         await message.answer("У вас недостатньо енергії")
     return await show_city_info(road["to_obj"], message, state)
-
-
-def register_road(dp: Dispatcher):
-    dp.register_message_handler(answer_road_choice, state=Road.road_name)
