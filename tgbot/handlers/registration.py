@@ -8,8 +8,10 @@ from tgbot.misc.info import prepare_player_info
 from tgbot.keyboards.reply.general import create_markup, delete_markup
 from tgbot.keyboards.inline.hero_choice import hero_choice_markup
 from tgbot.states.states import Player
+from loader import dp
 
 
+@dp.message_handler(commands=["create"], state="*")
 async def create_player_handler(message: Message) -> Message:
     config: Config = message.bot.get('config')
     client = Client(config.db.password)
@@ -31,6 +33,7 @@ async def create_player_handler(message: Message) -> Message:
     )
 
 
+@dp.message_handler(state=Player.nation)
 async def answer_player_nation(
         message: Message, state: FSMContext
 ) -> Message:
@@ -58,6 +61,7 @@ async def answer_player_nation(
     return await message.answer("Напиши, як тебе звати", reply_markup=markup)
 
 
+@dp.message_handler(state=Player.name)
 async def answer_player_name(
         message: Message, state: FSMContext
 ) -> Message:
@@ -68,6 +72,7 @@ async def answer_player_name(
     return await message.answer("Обери свій клас", reply_markup=markup)
 
 
+@dp.message_handler(state=Player.hero_class)
 async def answer_player_class(
         message: Message, state: FSMContext
 ) -> Message:
@@ -86,10 +91,3 @@ async def answer_player_class(
     client.insert(data, "players")
     await message.answer(text)
     return await message.answer("Вас задовільняє ваш персонаж?", reply_markup=hero_choice_markup)
-
-
-def register_registration(dp: Dispatcher):
-    dp.register_message_handler(create_player_handler, commands=["create"], state="*")
-    dp.register_message_handler(answer_player_nation, state=Player.nation)
-    dp.register_message_handler(answer_player_name, state=Player.name)
-    dp.register_message_handler(answer_player_class, state=Player.hero_class)
