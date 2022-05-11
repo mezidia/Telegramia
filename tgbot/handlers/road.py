@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Dispatcher
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
@@ -15,6 +17,8 @@ from loader import dp
 
 @dp.message_handler(state=Road.road_name)
 async def answer_road_choice(message: Message, state: FSMContext):
+    logger = logging.getLogger(__name__)
+    logger.info('Handler executed')
     road_name = parse_road_name(message.text)
     if road_name == "Назад":
         return await echo(message, state)

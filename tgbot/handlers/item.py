@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Dispatcher
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
@@ -18,6 +20,8 @@ from loader import dp
 
 @dp.message_handler(state=Item.type)
 async def answer_item_type(message: Message, state: FSMContext):
+    logger = logging.getLogger(__name__)
+    logger.info('Handler executed')
     text = message.text
     if text == "Назад":
         return await echo(message, state)
@@ -35,6 +39,8 @@ async def answer_item_type(message: Message, state: FSMContext):
 
 @dp.message_handler(state=Item.item)
 async def answer_item_purchase(message: Message, state: FSMContext):
+    logger = logging.getLogger(__name__)
+    logger.info('Handler executed')
     text = message.text
     if text == "Назад":
         return await echo(message, state)

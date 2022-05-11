@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Dispatcher
 from aiogram.types import Message
 
@@ -10,6 +12,8 @@ from loader import dp
 
 @dp.message_handler(is_player=True, commands=["where"], state="*")
 async def send_place_info(message: Message) -> Message:
+    logger = logging.getLogger(__name__)
+    logger.info('Handler executed')
     config: Config = message.bot.get('config')
     client = Client(config.db.password)
     user_id = message.from_user.id
@@ -19,6 +23,8 @@ async def send_place_info(message: Message) -> Message:
 
 @dp.message_handler(is_player=True, commands=["me"], state="*")
 async def show_player_handler(message: Message) -> Message:
+    logger = logging.getLogger(__name__)
+    logger.info('Handler executed')
     config: Config = message.bot.get('config')
     client = Client(config.db.password)
     user_id = message.from_user.id

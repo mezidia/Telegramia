@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Dispatcher
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
@@ -12,8 +14,11 @@ from tgbot.misc.city import show_city_info
 from tgbot.handlers.echo import echo
 from loader import dp
 
+
 @dp.message_handler(state=Horse.horse)
 async def answer_horse_purchase(message: Message, state: FSMContext):
+    logger = logging.getLogger(__name__)
+    logger.info('Handler executed')
     text = message.text
     if text == "Назад":
         return await echo(message, state)

@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Dispatcher
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
@@ -10,8 +12,10 @@ from tgbot.misc.city import show_city_info
 from loader import dp
 
 
-@dp.message_handler(is_player=True, state="*")
+@dp.message_handler(is_player=True)
 async def echo(message: Message, state: FSMContext) -> Message:
+    logger = logging.getLogger(__name__)
+    logger.info('Handler executed')
     config: Config = message.bot.get('config')
     client = Client(config.db.password)
     user_id = message.from_user.id

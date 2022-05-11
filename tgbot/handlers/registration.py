@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Dispatcher
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
@@ -13,6 +15,8 @@ from loader import dp
 
 @dp.message_handler(commands=["create"], state="*")
 async def create_player_handler(message: Message) -> Message:
+    logger = logging.getLogger(__name__)
+    logger.info('Handler executed')
     config: Config = message.bot.get('config')
     client = Client(config.db.password)
     user_id = message.from_user.id
@@ -37,6 +41,8 @@ async def create_player_handler(message: Message) -> Message:
 async def answer_player_nation(
         message: Message, state: FSMContext
 ) -> Message:
+    logger = logging.getLogger(__name__)
+    logger.info('Handler executed')
     nation = message.text
     user_id = message.from_user.id
     telegram_name = message.from_user.username
@@ -65,6 +71,8 @@ async def answer_player_nation(
 async def answer_player_name(
         message: Message, state: FSMContext
 ) -> Message:
+    logger = logging.getLogger(__name__)
+    logger.info('Handler executed')
     name = message.text
     await state.update_data({"name": name})
     markup = await create_markup("classes", "name", message)
@@ -76,6 +84,8 @@ async def answer_player_name(
 async def answer_player_class(
         message: Message, state: FSMContext
 ) -> Message:
+    logger = logging.getLogger(__name__)
+    logger.info('Handler executed')
     class_name = message.text
     await state.update_data({"hero_class": class_name})
     config: Config = message.bot.get('config')

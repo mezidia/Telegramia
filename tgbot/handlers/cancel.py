@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Dispatcher
 from aiogram.dispatcher.storage import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
@@ -7,6 +9,8 @@ from loader import dp
 
 @dp.message_handler(commands="cancel", state="*")
 async def cancel_handler(message: Message, state: FSMContext) -> Message:
+    logger = logging.getLogger(__name__)
+    logger.info('Handler executed')
     """
     Allow user to cancel any action
     """
