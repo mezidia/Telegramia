@@ -2,7 +2,10 @@ from aiogram import Dispatcher
 from aiogram.dispatcher.storage import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
+from loader import dp
 
+
+@dp.message_handler(commands="cancel", state="*")
 async def cancel_handler(message: Message, state: FSMContext) -> Message:
     """
     Allow user to cancel any action
@@ -12,7 +15,3 @@ async def cancel_handler(message: Message, state: FSMContext) -> Message:
         return await message.reply("Процес реєстрації не починався.")
     await state.finish()
     return await message.reply("Реєстрація зупинена.", reply_markup=ReplyKeyboardRemove())
-
-
-def register_cancel(dp: Dispatcher):
-    dp.register_message_handler(cancel_handler, commands="cancel", state="*")
