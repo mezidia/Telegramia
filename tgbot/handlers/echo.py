@@ -7,7 +7,10 @@ from tgbot.models.database import Client
 from tgbot.misc.city_objects import city_objects
 from tgbot.misc.city import show_city_info
 
+from loader import dp
 
+
+@dp.message_handler(is_player=True, state="*")
 async def echo(message: Message, state: FSMContext) -> Message:
     config: Config = message.bot.get('config')
     client = Client(config.db.password)
@@ -20,7 +23,3 @@ async def echo(message: Message, state: FSMContext) -> Message:
             await state.finish()
             return await city_object["function"](player, message)
     return await show_city_info(player["current_state"], message, state)
-
-
-def register_echo(dp: Dispatcher):
-    dp.register_message_handler(echo, is_player=True, state="*")
