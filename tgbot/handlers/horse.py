@@ -10,8 +10,9 @@ from tgbot.misc.parsers import parse_purchase
 from tgbot.misc.checks import check_money
 from tgbot.misc.city import show_city_info
 from tgbot.handlers.echo import echo
+from loader import dp
 
-
+@dp.message_handler(state=Horse.horse)
 async def answer_horse_purchase(message: Message, state: FSMContext):
     text = message.text
     if text == "Назад":
@@ -49,7 +50,3 @@ async def answer_horse_purchase(message: Message, state: FSMContext):
     else:
         await message.answer("У вас недостатньо грошей")
     return await show_city_info(player["current_state"], message, state)
-
-
-def register_answer_horse(dp: Dispatcher):
-    dp.register_message_handler(answer_horse_purchase, state=Horse.horse)
