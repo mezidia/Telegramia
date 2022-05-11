@@ -12,13 +12,17 @@ from tgbot.keyboards.reply.general import create_markup
 from tgbot.keyboards.inline.help_information import create_markup as create_help_markup
 from tgbot.keyboards.inline.callback_datas import hero_callback, buy_callback
 
+from loader import dp
 
+
+@dp.callback_query_handler(buy_callback.filter(characteristic=characteristics))
 async def recover_callback(call: CallbackQuery):
     user_id = call.from_user.id
     await call.answer()
     await apply_recover(user_id, call, call.data)
 
 
+@dp.callback_query_handler(hero_callback.filter(choice="yes"))
 async def accept_registration(call: CallbackQuery):
     await call.answer("Вітаємо, вас зареєстровано!", show_alert=True, cache_time=60)
     await call.message.edit_reply_markup()
@@ -32,6 +36,7 @@ async def accept_registration(call: CallbackQuery):
     )
 
 
+@dp.callback_query_handler(hero_callback.filter(choice="no"))
 async def reject_registration(call: CallbackQuery):
     await call.answer("Процес реєстрації почнеться знову", show_alert=True, cache_time=60)
     await call.message.edit_reply_markup()
@@ -44,20 +49,14 @@ async def reject_registration(call: CallbackQuery):
     return await call.message.answer("Оберіть країну", reply_markup=markup)
 
 
+@dp.callback_query_handler(text_contains="read")
 async def manual_page_callback(call: CallbackQuery):
     await call.answer()
     page = int(call.data.split(":")[-1])
     return await call.message.edit_text(help_text[page], reply_markup=create_help_markup(page))
 
 
+@dp.callback_query_handler(text="close")
 async def close_manual_page(call: CallbackQuery):
     await call.answer()
     await call.message.delete()
-
-
-def register_callbacks(dp: Dispatcher):
-    dp.register_callback_query_handler(recover_callback, buy_callback.filter(characteristic=characteristics))
-    dp.register_callback_query_handler(accept_registration, hero_callback.filter(choice="yes"))
-    dp.register_callback_query_handler(reject_registration, hero_callback.filter(choice="no"))
-    dp.register_callback_query_handler(manual_page_callback, text_contains="read")
-    dp.register_callback_query_handler(close_manual_page, text="close")
