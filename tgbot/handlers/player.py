@@ -16,6 +16,7 @@ async def send_place_info(message: Message) -> Message:
     city_name = client.get({"user_id": user_id}, "players")
     return await show_city_info(city_name["current_state"], message)
 
+
 @dp.message_handler(is_player=True, commands=["me"], state="*")
 async def show_player_handler(message: Message) -> Message:
     config: Config = message.bot.get('config')
