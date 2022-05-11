@@ -9,7 +9,10 @@ from tgbot.misc.city_objects import city_objects
 from tgbot.misc.commands import handle_commands
 from tgbot.handlers.echo import echo
 
+from loader import dp
 
+
+@dp.message_handler(state=CityObject.city_object)
 async def answer_city_object(message: Message, state: FSMContext):
     text = message.text
     if text == "Назад":
@@ -22,7 +25,3 @@ async def answer_city_object(message: Message, state: FSMContext):
         if city_object["ukr_name"] == text:
             await state.finish()
             return await city_object["function"](player_info=player, message=message)
-
-
-def register_city_object(dp: Dispatcher):
-    dp.register_message_handler(answer_city_object, state=CityObject.city_object)
