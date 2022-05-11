@@ -10,6 +10,7 @@ from tgbot.services.setting_commands import set_default_commands
 from tgbot.services.admins_notify import on_startup_notify
 from loader import dp
 
+# TODO: pass logger through the bot
 logger = logging.getLogger(__name__)
 
 
