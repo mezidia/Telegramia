@@ -13,8 +13,10 @@ from tgbot.misc.commands import handle_commands
 from tgbot.misc.city import show_city_info
 from tgbot.config import Config
 from tgbot.misc.types import types
+from loader import dp
 
 
+@dp.message_handler(state=Item.type)
 async def answer_item_type(message: Message, state: FSMContext):
     text = message.text
     if text == "Назад":
@@ -31,6 +33,7 @@ async def answer_item_type(message: Message, state: FSMContext):
     return await show_items(player, message, type_)
 
 
+@dp.message_handler(state=Item.item)
 async def answer_item_purchase(message: Message, state: FSMContext):
     text = message.text
     if text == "Назад":
@@ -63,8 +66,3 @@ async def answer_item_purchase(message: Message, state: FSMContext):
     else:
         await message.answer("У вас недостатньо грошей")
     return await show_city_info(player["current_state"], message, state)
-
-
-def register_item_answers(dp: Dispatcher):
-    dp.register_message_handler(answer_item_type, state=Item.type)
-    dp.register_message_handler(answer_item_purchase, state=Item.item)
