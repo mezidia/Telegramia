@@ -1,6 +1,6 @@
 import logging
 
-from aiogram import types, Dispatcher
+from aiogram.types import Message
 from aiogram.dispatcher.filters.builtin import CommandStart
 
 from tgbot.misc.help import help_text
@@ -9,7 +9,7 @@ from loader import dp
 
 
 @dp.message_handler(CommandStart(), state="*")
-async def show_start_text(message: types.Message) -> types.Message:
+async def show_start_text(message: Message) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     text = "Вітаю у текстовій грі <b>Telegramia</b>. Створіть <i>свого героя</i> за допомогою команди /create. Для " \
