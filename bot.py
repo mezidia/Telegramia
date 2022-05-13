@@ -8,6 +8,7 @@ from tgbot.config import load_config
 from tgbot.filters.is_player import IsPlayer
 from tgbot.services.setting_commands import set_default_commands
 from tgbot.services.admins_notify import on_startup_notify
+from tgbot.middlewares.throttling import ThrottlingMiddleware
 from loader import dp
 
 # TODO: pass logger through the bot
@@ -15,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 def register_all_middlewares(dispatcher: Dispatcher):
-    # TODO: set antispamm middleware
     # TODO: set ACL middleware
     logger.info('Registering middlewares')
+    dispatcher.setup_middleware(ThrottlingMiddleware())
 
 
 def register_all_filters(dispatcher: Dispatcher):
