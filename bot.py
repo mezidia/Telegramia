@@ -11,7 +11,6 @@ from tgbot.services.admins_notify import on_startup_notify
 from tgbot.middlewares.throttling import ThrottlingMiddleware
 from loader import dp
 
-# TODO: pass logger through the bot
 logger = logging.getLogger(__name__)
 
 
