@@ -1,6 +1,5 @@
 import logging
 
-from aiogram import Dispatcher
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
@@ -11,7 +10,6 @@ from tgbot.misc.purchase import smart_purchase, do_purchase
 from tgbot.misc.checks import check_money
 from tgbot.misc.parsers import parse_purchase
 from tgbot.misc.city_objects import show_item_types, show_items
-from tgbot.misc.commands import handle_commands
 from tgbot.misc.city import show_city_info
 from tgbot.config import Config
 from tgbot.misc.types import types

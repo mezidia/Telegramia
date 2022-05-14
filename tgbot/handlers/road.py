@@ -1,6 +1,5 @@
 import logging
 
-from aiogram import Dispatcher
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
@@ -11,7 +10,6 @@ from tgbot.models.database import Client
 from tgbot.misc.checks import check_energy
 from tgbot.misc.player_processes import level_up
 from tgbot.misc.city import show_city_info
-from tgbot.misc.commands import handle_commands
 from tgbot.handlers.echo import echo
 from loader import dp
 

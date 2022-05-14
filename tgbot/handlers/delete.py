@@ -1,6 +1,5 @@
 import logging
 
-from aiogram import Dispatcher
 from aiogram.types import Message
 
 from tgbot.config import Config

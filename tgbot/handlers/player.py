@@ -1,7 +1,7 @@
 import logging
 
-from aiogram import Dispatcher
 from aiogram.types import Message
+from aiogram.dispatcher.filters import Command
 
 from tgbot.config import Config
 from tgbot.misc.city import show_city_info
@@ -10,7 +10,7 @@ from tgbot.models.database import Client
 from loader import dp
 
 
-@dp.message_handler(is_player=True, commands=["where"], state="*")
+@dp.message_handler(Command('where'), is_player=True, state="*")
 async def send_place_info(message: Message) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
@@ -21,7 +21,7 @@ async def send_place_info(message: Message) -> Message:
     return await show_city_info(city_name["current_state"], message)
 
 
-@dp.message_handler(is_player=True, commands=["me"], state="*")
+@dp.message_handler(Command('me'), is_player=True, state="*")
 async def show_player_handler(message: Message) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')

@@ -1,13 +1,11 @@
 import logging
 
-from aiogram import Dispatcher
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
 from tgbot.states.states import Horse
 from tgbot.config import Config
 from tgbot.models.database import Client
-from tgbot.misc.commands import handle_commands
 from tgbot.misc.parsers import parse_purchase
 from tgbot.misc.checks import check_money
 from tgbot.misc.city import show_city_info

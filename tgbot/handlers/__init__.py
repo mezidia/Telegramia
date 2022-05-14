@@ -4,10 +4,10 @@ from . import cancel
 from . import delete
 from . import start
 from . import help
+from . import player
 from . import registration
 from . import city
 from . import horse
 from . import item
-from . import player
 from . import road
 from . import echo

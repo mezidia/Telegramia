@@ -1,6 +1,5 @@
 import logging
 
-from aiogram import Dispatcher
 from aiogram.types import Message
 from aiogram.dispatcher.filters.builtin import CommandHelp
 

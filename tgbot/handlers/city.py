@@ -1,6 +1,5 @@
 import logging
 
-from aiogram import Dispatcher
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
@@ -8,7 +7,6 @@ from tgbot.states.states import CityObject
 from tgbot.config import Config
 from tgbot.models.database import Client
 from tgbot.misc.city_objects import city_objects
-from tgbot.misc.commands import handle_commands
 from tgbot.handlers.echo import echo
 
 from loader import dp
