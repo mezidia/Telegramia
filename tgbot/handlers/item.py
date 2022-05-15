@@ -11,7 +11,6 @@ from tgbot.misc.checks import check_money
 from tgbot.misc.parsers import parse_purchase
 from tgbot.misc.city_objects import show_item_types, show_items
 from tgbot.misc.city import show_city_info
-from tgbot.config import Config
 from tgbot.misc.types import types
 from loader import dp
 
@@ -22,7 +21,7 @@ async def answer_item_type(message: Message, state: FSMContext, player: dict):
     logger.info('Handler executed')
     text = message.text
     if text == "Назад":
-        return await echo(message, state)
+        return await echo(message, state, player)
     try:
         type_ = types[text]
     except KeyError:
@@ -37,9 +36,8 @@ async def answer_item_purchase(message: Message, state: FSMContext, player: dict
     logger.info('Handler executed')
     text = message.text
     if text == "Назад":
-        return await echo(message, state)
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
+        return await echo(message, state, player)
+    client: Client = message.bot.get('client')
     item, price = parse_purchase(text)
     if check_money(player, price):
         items = player["items"]

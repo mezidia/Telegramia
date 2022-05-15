@@ -3,7 +3,6 @@ import logging
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
-from tgbot.config import Config
 from tgbot.states.states import Road
 from tgbot.misc.parsers import parse_road_name
 from tgbot.models.database import Client
@@ -20,9 +19,8 @@ async def answer_road_choice(message: Message, state: FSMContext, player: dict):
     logger.info('Handler executed')
     road_name = parse_road_name(message.text)
     if road_name == "Назад":
-        return await echo(message, state)
-    config: Config = message.bot.get("config")
-    client = Client(config.db.password)
+        return await echo(message, state, player)
+    client: Client = message.bot.get('client')
     user_id = message.from_user.id
     road = client.get({"name": road_name}, "roads")
     road_energy = float(road["energy"])

@@ -16,7 +16,7 @@ async def answer_city_object(message: Message, state: FSMContext, player: dict):
     logger.info('Handler executed')
     text = message.text
     if text == "Назад":
-        return await echo(message, state)
+        return await echo(message, state, player)
     for city_object in city_objects:
         if city_object["ukr_name"] == text:
             await state.finish()

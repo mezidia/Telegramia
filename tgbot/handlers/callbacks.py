@@ -8,7 +8,6 @@ from tgbot.misc.recover import apply_recover
 from tgbot.misc.help import help_text
 from tgbot.misc.characterstics import characteristics
 from tgbot.states.states import Player
-from tgbot.config import Config
 from tgbot.keyboards.reply.general import create_markup
 from tgbot.keyboards.inline.help_information import create_markup as create_help_markup
 from tgbot.keyboards.inline.callback_datas import hero_callback, buy_callback
@@ -31,8 +30,7 @@ async def accept_registration(call: CallbackQuery, player: dict):
     logger.info('Handler executed')
     await call.answer("Вітаємо, вас зареєстровано!", show_alert=True, cache_time=60)
     await call.message.edit_reply_markup()
-    config: Config = call.bot.get('config')
-    client = Client(config.db.password)
+    client: Client = call.bot.get('client')
     client.update({"name": player["hero_class"]}, {"choices": 1}, "classes", "$inc")
     return await show_city_info(
         player["current_state"], call.message
@@ -46,8 +44,7 @@ async def reject_registration(call: CallbackQuery):
     await call.answer("Процес реєстрації почнеться знову", show_alert=True, cache_time=60)
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
-    config: Config = call.bot.get('config')
-    client = Client(config.db.password)
+    client: Client = call.bot.get('client')
     client.delete({"user_id": user_id}, "players")
     await Player.nation.set()
     markup = await create_markup("countries", "name", call.message)

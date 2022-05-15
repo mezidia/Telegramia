@@ -4,7 +4,6 @@ from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
 from tgbot.states.states import Horse
-from tgbot.config import Config
 from tgbot.models.database import Client
 from tgbot.misc.parsers import parse_purchase
 from tgbot.misc.checks import check_money
@@ -19,9 +18,8 @@ async def answer_horse_purchase(message: Message, state: FSMContext, player: dic
     logger.info('Handler executed')
     text = message.text
     if text == "Назад":
-        return await echo(message, state)
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
+        return await echo(message, state, player)
+    client: Client = message.bot.get('client')
     user_id = message.from_user.id
     horse, price = parse_purchase(text)
     if check_money(player, price):

@@ -2,7 +2,6 @@ import logging
 
 from aiogram.types import Message
 
-from tgbot.config import Config
 from tgbot.models.database import Client
 
 from loader import dp
@@ -12,7 +11,6 @@ from loader import dp
 async def delete_handler(message: Message) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
+    client: Client = message.bot.get('client')
     client.delete({'user_id': message.from_user.id}, 'players')
     return await message.answer('Ви успішно видалили свій профіль!')

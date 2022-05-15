@@ -3,7 +3,6 @@ import logging
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
-from tgbot.config import Config
 from tgbot.models.database import Client
 from tgbot.misc.info import prepare_player_info
 from tgbot.keyboards.reply.general import create_markup, delete_markup
@@ -42,8 +41,7 @@ async def answer_player_nation(
     nation = message.text
     user_id = message.from_user.id
     telegram_name = message.from_user.username
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
+    client: Client = message.bot.get('client')
     country = client.get({"name": nation}, "countries")
     client.update({"name": country["name"]}, {"population": 1}, "countries", "$inc")
     await state.update_data({"nation": nation})
@@ -84,8 +82,7 @@ async def answer_player_class(
     logger.info('Handler executed')
     class_name = message.text
     await state.update_data({"hero_class": class_name})
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
+    client: Client = message.bot.get('client')
     class_ = client.get({"name": class_name}, "classes")
     await state.update_data({"strength": class_["characteristics"]["strength"]})
     await state.update_data({"agility": class_["characteristics"]["agility"]})
