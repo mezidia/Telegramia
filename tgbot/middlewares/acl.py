@@ -2,7 +2,6 @@ from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.types import Message, User, CallbackQuery
 from aiogram import Bot
 
-from tgbot.config import Config
 from tgbot.models.database import Client
 
 
@@ -10,8 +9,7 @@ class ACLMiddleware(BaseMiddleware):
     async def setup_chat(self, data: dict, user: User):
         user_id = user.id
         bot = Bot.get_current()
-        config: Config = bot.get('config')
-        client = Client(config.db.password)
+        client: Client = bot.get('client')
         player = client.get({'user_id': user_id}, 'players')
         data['player'] = player
 
