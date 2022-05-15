@@ -60,6 +60,8 @@ async def on_startup(dispatcher: Dispatcher, webhook_url: str = None) -> None:
 async def on_shutdown(dispatcher: Dispatcher) -> None:
     await dispatcher.storage.close()
     await dispatcher.storage.wait_closed()
+    client = dispatcher.bot.get('client')
+    client.close()
     logger.info('Bot shutdown')
 
 

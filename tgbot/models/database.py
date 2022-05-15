@@ -12,11 +12,11 @@ class Client:
         :param password: password to account
         :param db_name: name of database in current cluster
         """
-        cluster = MongoClient(
+        self.cluster = MongoClient(
             f"mongodb+srv://mezgoodle:{password}@telegramia.jkq5x.mongodb.net/"
             f"telegramia?retryWrites=true&w=majority"
         )
-        self.db = cluster[db_name]
+        self.db = self.cluster[db_name]
 
     def insert(self, data: dict, collection_name: str) -> results.InsertOneResult:
         """
@@ -82,3 +82,9 @@ class Client:
             return self.db[collection_name].delete_one(query)
         except Exception as e:
             print("Error:", e)
+
+    def close(self):
+        """
+        Method for closing client
+        """
+        self.cluster.close()
