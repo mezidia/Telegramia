@@ -13,8 +13,9 @@ from tgbot.misc.city import show_city_info
 from tgbot.handlers.echo import echo
 from loader import dp
 
+
 @dp.message_handler(state=Road.road_name)
-async def answer_road_choice(message: Message, state: FSMContext):
+async def answer_road_choice(message: Message, state: FSMContext, player: dict):
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     road_name = parse_road_name(message.text)
@@ -23,7 +24,6 @@ async def answer_road_choice(message: Message, state: FSMContext):
     config: Config = message.bot.get("config")
     client = Client(config.db.password)
     user_id = message.from_user.id
-    player = client.get({"user_id": user_id}, "players")
     road = client.get({"name": road_name}, "roads")
     road_energy = float(road["energy"])
     if check_energy(player, road_energy):

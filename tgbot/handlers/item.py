@@ -17,7 +17,7 @@ from loader import dp
 
 
 @dp.message_handler(state=Item.type)
-async def answer_item_type(message: Message, state: FSMContext):
+async def answer_item_type(message: Message, state: FSMContext, player: dict):
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     text = message.text
@@ -28,15 +28,11 @@ async def answer_item_type(message: Message, state: FSMContext):
     except KeyError:
         await message.answer("Невірний тип предмету")
         return await show_item_types({}, message)
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
-    user_id = message.from_user.id
-    player = client.get({"user_id": user_id}, "players")
     return await show_items(player, message, type_)
 
 
 @dp.message_handler(state=Item.item)
-async def answer_item_purchase(message: Message, state: FSMContext):
+async def answer_item_purchase(message: Message, state: FSMContext, player: dict):
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     text = message.text
@@ -44,8 +40,6 @@ async def answer_item_purchase(message: Message, state: FSMContext):
         return await echo(message, state)
     config: Config = message.bot.get('config')
     client = Client(config.db.password)
-    user_id = message.from_user.id
-    player = client.get({"user_id": user_id}, "players")
     item, price = parse_purchase(text)
     if check_money(player, price):
         items = player["items"]

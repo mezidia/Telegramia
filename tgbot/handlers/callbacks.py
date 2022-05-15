@@ -1,6 +1,5 @@
 import logging
 
-from aiogram import Dispatcher
 from aiogram.types import CallbackQuery
 
 from tgbot.models.database import Client
@@ -27,15 +26,13 @@ async def recover_callback(call: CallbackQuery):
 
 
 @dp.callback_query_handler(hero_callback.filter(choice="yes"))
-async def accept_registration(call: CallbackQuery):
+async def accept_registration(call: CallbackQuery, player: dict):
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     await call.answer("Вітаємо, вас зареєстровано!", show_alert=True, cache_time=60)
     await call.message.edit_reply_markup()
-    user_id = call.from_user.id
     config: Config = call.bot.get('config')
     client = Client(config.db.password)
-    player = client.get({"user_id": user_id}, "players")
     client.update({"name": player["hero_class"]}, {"choices": 1}, "classes", "$inc")
     return await show_city_info(
         player["current_state"], call.message

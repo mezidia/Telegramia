@@ -13,13 +13,10 @@ from loader import dp
 
 
 @dp.message_handler(commands=["create"], state="*")
-async def create_player_handler(message: Message) -> Message:
+async def create_player_handler(message: Message, player: dict) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
-    user_id = message.from_user.id
-    if client.get({"user_id": user_id}, "players") is not None:
+    if player is not None:
         return await message.reply("Ви вже зареєстровані")
     photo_url = (
         "https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_intro.jpg"
