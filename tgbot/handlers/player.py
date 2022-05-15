@@ -12,8 +12,7 @@ from loader import dp
 
 
 @dp.message_handler(Command('where'), is_player=True, state="*")
-async def send_place_info(message: Message, user: dict) -> Message:
-    pprint(user)
+async def send_place_info(message: Message) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     config: Config = message.bot.get('config')
@@ -24,13 +23,8 @@ async def send_place_info(message: Message, user: dict) -> Message:
 
 
 @dp.message_handler(Command('me'), is_player=True, state="*")
-async def show_player_handler(message: Message, user: dict) -> Message:
-    pprint(user)
+async def show_player_handler(message: Message, player: dict) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
-    user_id = message.from_user.id
-    player = client.get({"user_id": user_id}, "players")
     text = await prepare_player_info(player)
     return await message.answer(text)

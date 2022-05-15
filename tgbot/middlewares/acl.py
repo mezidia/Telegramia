@@ -12,8 +12,8 @@ class ACLMiddleware(BaseMiddleware):
         bot = Bot.get_current()
         config: Config = bot.get('config')
         client = Client(config.db.password)
-        user = client.get({'user_id': user_id}, 'players')
-        data['user'] = user
+        player = client.get({'user_id': user_id}, 'players')
+        data['player'] = player
 
     async def on_pre_process_message(self, message: Message, data: dict):
         await self.setup_chat(data, message.from_user)
