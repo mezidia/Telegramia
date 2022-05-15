@@ -1,4 +1,5 @@
 import logging
+from pprint import pprint
 
 from aiogram.types import Message
 from aiogram.dispatcher.filters import Command
@@ -11,7 +12,8 @@ from loader import dp
 
 
 @dp.message_handler(Command('where'), is_player=True, state="*")
-async def send_place_info(message: Message) -> Message:
+async def send_place_info(message: Message, user: dict) -> Message:
+    pprint(user)
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     config: Config = message.bot.get('config')
@@ -22,7 +24,8 @@ async def send_place_info(message: Message) -> Message:
 
 
 @dp.message_handler(Command('me'), is_player=True, state="*")
-async def show_player_handler(message: Message) -> Message:
+async def show_player_handler(message: Message, user: dict) -> Message:
+    pprint(user)
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     config: Config = message.bot.get('config')
