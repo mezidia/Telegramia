@@ -1,7 +1,7 @@
 from aiogram.types import Message
 
 from tgbot.models.database import Client
-from tgbot.misc.checks import check_in_raid, check_in_dungeon, check_health, check_was_in_raid
+from tgbot.misc.system.checks import check_in_raid, check_in_dungeon, check_health, check_was_in_raid
 from tgbot.misc.player_processes import apply_items
 from tgbot.misc.city.types import types
 from tgbot.config import Config

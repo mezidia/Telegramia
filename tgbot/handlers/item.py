@@ -7,8 +7,8 @@ from tgbot.states.states import Item
 from tgbot.handlers.echo import echo
 from tgbot.models.database import Client
 from tgbot.misc.purchase import smart_purchase, do_purchase
-from tgbot.misc.checks import check_money
-from tgbot.misc.parsers import parse_purchase
+from tgbot.misc.system.checks import check_money
+from tgbot.misc.system.parsers import parse_purchase
 from tgbot.misc.city.city_objects import show_item_types, show_items
 from tgbot.misc.city.city import show_city_info
 from tgbot.misc.city.types import types

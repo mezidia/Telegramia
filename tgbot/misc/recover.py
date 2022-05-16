@@ -2,7 +2,7 @@ from aiogram.types import CallbackQuery
 
 from tgbot.config import Config
 from tgbot.models.database import Client
-from tgbot.misc.checks import check_money, check_characteristics
+from tgbot.misc.system.checks import check_money, check_characteristics
 from tgbot.misc.city.city import show_city_info
 
 
