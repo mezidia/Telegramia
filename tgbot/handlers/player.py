@@ -4,7 +4,7 @@ from aiogram.types import Message
 from aiogram.dispatcher.filters import Command
 
 from tgbot.misc.city.city import show_city_info
-from tgbot.misc.info import prepare_player_info
+from tgbot.misc.system.info import prepare_player_info
 from loader import dp
 
 

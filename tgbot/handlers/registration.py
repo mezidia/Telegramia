@@ -4,7 +4,7 @@ from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
 from tgbot.models.database import Client
-from tgbot.misc.info import prepare_player_info
+from tgbot.misc.system.info import prepare_player_info
 from tgbot.keyboards.reply.general import create_markup, delete_markup
 from tgbot.keyboards.inline.hero_choice import hero_choice_markup
 from tgbot.states.states import Player
