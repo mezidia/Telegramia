@@ -6,7 +6,7 @@ from aiogram.dispatcher import FSMContext
 from tgbot.states.states import Item
 from tgbot.handlers.echo import echo
 from tgbot.models.database import Client
-from tgbot.misc.purchase import smart_purchase, do_purchase
+from tgbot.misc.system.purchase import smart_purchase, do_purchase
 from tgbot.misc.system.checks import check_money
 from tgbot.misc.system.parsers import parse_purchase
 from tgbot.misc.city.city_objects import show_item_types, show_items
