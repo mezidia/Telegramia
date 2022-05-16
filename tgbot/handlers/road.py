@@ -8,7 +8,7 @@ from tgbot.misc.parsers import parse_road_name
 from tgbot.models.database import Client
 from tgbot.misc.checks import check_energy
 from tgbot.misc.player_processes import level_up
-from tgbot.misc.city import show_city_info
+from tgbot.misc.city.city import show_city_info
 from tgbot.handlers.echo import echo
 from loader import dp
 

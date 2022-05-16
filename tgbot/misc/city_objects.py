@@ -3,7 +3,7 @@ from aiogram.types import Message
 from tgbot.models.database import Client
 from tgbot.misc.checks import check_in_raid, check_in_dungeon, check_health, check_was_in_raid
 from tgbot.misc.player_processes import apply_items
-from tgbot.misc.types import types
+from tgbot.misc.city.types import types
 from tgbot.config import Config
 from tgbot.states.states import Road, Item, Horse
 from tgbot.keyboards.reply.roads import create_markup as roads_markup
