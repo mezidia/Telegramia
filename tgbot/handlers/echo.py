@@ -3,7 +3,7 @@ import logging
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
-from tgbot.misc.city_objects import city_objects
+from tgbot.misc.city.city_objects import city_objects
 from tgbot.misc.city.city import show_city_info
 
 from loader import dp

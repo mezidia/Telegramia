@@ -4,7 +4,7 @@ from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
 from tgbot.states.states import CityObject
-from tgbot.misc.city_objects import city_objects
+from tgbot.misc.city.city_objects import city_objects
 from tgbot.handlers.echo import echo
 
 from loader import dp

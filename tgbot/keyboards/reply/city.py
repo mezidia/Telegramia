@@ -1,6 +1,6 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
-from tgbot.misc.city_objects import city_objects
+from tgbot.misc.city.city_objects import city_objects
 
 
 def create_markup(city: dict):
