@@ -1,7 +1,7 @@
 from aiogram.types import Message, ReplyKeyboardMarkup
 
 from tgbot.models.database import Client
-from tgbot.misc.finish_state import finish_state
+from tgbot.misc.system.finish_state import finish_state
 from tgbot.config import Config
 from tgbot.keyboards.reply.city import create_markup as city_markup
 from tgbot.keyboards.reply.dungeon import create_markup as dungeon_markup
