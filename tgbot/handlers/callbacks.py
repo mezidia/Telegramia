@@ -6,7 +6,7 @@ from tgbot.models.database import Client
 from tgbot.misc.city.city import show_city_info
 from tgbot.misc.recover import apply_recover
 from tgbot.misc.system.help import help_text
-from tgbot.misc.characterstics import characteristics
+from tgbot.misc.system.characterstics import characteristics
 from tgbot.states.states import Player
 from tgbot.keyboards.reply.general import create_markup
 from tgbot.keyboards.inline.help_information import create_markup as create_help_markup
