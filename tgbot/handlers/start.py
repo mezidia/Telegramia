@@ -3,7 +3,7 @@ import logging
 from aiogram.types import Message
 from aiogram.dispatcher.filters.builtin import CommandStart
 
-from tgbot.misc.help import help_text
+from tgbot.misc.system.help import help_text
 from tgbot.keyboards.inline.help_information import create_markup
 from loader import dp
 

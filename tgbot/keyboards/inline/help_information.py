@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from tgbot.keyboards.inline.callback_datas import help_callback
-from tgbot.misc.help import help_text
+from tgbot.misc.system.help import help_text
 
 
 help_markup = InlineKeyboardMarkup(row_width=1, inline_keyboard=[
