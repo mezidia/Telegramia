@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 def register_all_middlewares(dispatcher: Dispatcher):
-    # TODO: set ACL middleware
     logger.info('Registering middlewares')
     dispatcher.setup_middleware(ThrottlingMiddleware())
     dispatcher.setup_middleware(ACLMiddleware())
