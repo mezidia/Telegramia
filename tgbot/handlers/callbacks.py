@@ -1,6 +1,6 @@
 import logging
 
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, Message
 
 from tgbot.models.database import Client
 from tgbot.misc.city.city import show_city_info
@@ -16,7 +16,7 @@ from loader import dp
 
 
 @dp.callback_query_handler(buy_callback.filter(characteristic=characteristics))
-async def recover_callback(call: CallbackQuery):
+async def recover_callback(call: CallbackQuery) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     user_id = call.from_user.id
@@ -25,7 +25,7 @@ async def recover_callback(call: CallbackQuery):
 
 
 @dp.callback_query_handler(hero_callback.filter(choice="yes"))
-async def accept_registration(call: CallbackQuery, player: dict):
+async def accept_registration(call: CallbackQuery, player: dict) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     await call.answer("Вітаємо, вас зареєстровано!", show_alert=True, cache_time=60)
@@ -38,7 +38,7 @@ async def accept_registration(call: CallbackQuery, player: dict):
 
 
 @dp.callback_query_handler(hero_callback.filter(choice="no"))
-async def reject_registration(call: CallbackQuery):
+async def reject_registration(call: CallbackQuery) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     await call.answer("Процес реєстрації почнеться знову", show_alert=True, cache_time=60)
@@ -52,7 +52,7 @@ async def reject_registration(call: CallbackQuery):
 
 
 @dp.callback_query_handler(text_contains="read")
-async def manual_page_callback(call: CallbackQuery):
+async def manual_page_callback(call: CallbackQuery) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     await call.answer()
@@ -61,8 +61,8 @@ async def manual_page_callback(call: CallbackQuery):
 
 
 @dp.callback_query_handler(text="close")
-async def close_manual_page(call: CallbackQuery):
+async def close_manual_page(call: CallbackQuery) -> bool:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     await call.answer()
-    await call.message.delete()
+    return await call.message.delete()
