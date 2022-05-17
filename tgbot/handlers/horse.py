@@ -13,7 +13,7 @@ from loader import dp
 
 
 @dp.message_handler(state=Horse.horse)
-async def answer_horse_purchase(message: Message, state: FSMContext, player: dict):
+async def answer_horse_purchase(message: Message, state: FSMContext, player: dict) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     text = message.text
