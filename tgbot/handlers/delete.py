@@ -1,13 +1,14 @@
 import logging
 
 from aiogram.types import Message
+from aiogram.dispatcher.filters import Command
 
 from tgbot.models.database import Client
 
 from loader import dp
 
 
-@dp.message_handler(commands=["delete"], state='*')
+@dp.message_handler(Command('delete'), state='*')
 async def delete_handler(message: Message) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')

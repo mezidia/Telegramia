@@ -2,6 +2,7 @@ import logging
 
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters import Command
 
 from tgbot.models.database import Client
 from tgbot.misc.system.info import prepare_player_info
@@ -11,7 +12,7 @@ from tgbot.states.states import Player
 from loader import dp
 
 
-@dp.message_handler(commands=["create"], state="*")
+@dp.message_handler(Command('create'), state="*")
 async def create_player_handler(message: Message, player: dict) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
@@ -33,9 +34,7 @@ async def create_player_handler(message: Message, player: dict) -> Message:
 
 
 @dp.message_handler(state=Player.nation)
-async def answer_player_nation(
-        message: Message, state: FSMContext
-) -> Message:
+async def answer_player_nation(message: Message, state: FSMContext) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     nation = message.text
@@ -62,9 +61,7 @@ async def answer_player_nation(
 
 
 @dp.message_handler(state=Player.name)
-async def answer_player_name(
-        message: Message, state: FSMContext
-) -> Message:
+async def answer_player_name(message: Message, state: FSMContext) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     name = message.text
@@ -75,9 +72,7 @@ async def answer_player_name(
 
 
 @dp.message_handler(state=Player.hero_class)
-async def answer_player_class(
-        message: Message, state: FSMContext
-) -> Message:
+async def answer_player_class(message: Message, state: FSMContext) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     class_name = message.text
