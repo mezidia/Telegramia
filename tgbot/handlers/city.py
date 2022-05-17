@@ -11,7 +11,7 @@ from loader import dp
 
 
 @dp.message_handler(state=CityObject.city_object)
-async def answer_city_object(message: Message, state: FSMContext, player: dict):
+async def answer_city_object(message: Message, state: FSMContext, player: dict) -> Message:
     logger = logging.getLogger(__name__)
     logger.info('Handler executed')
     text = message.text
