@@ -1,5 +1,3 @@
-import logging
-
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
@@ -14,8 +12,6 @@ from loader import dp
 
 @dp.message_handler(Command('create'), state="*")
 async def create_player_handler(message: Message, player: dict) -> Message:
-    logger = logging.getLogger(__name__)
-    logger.info('Handler executed')
     if player is not None:
         return await message.reply("Ви вже зареєстровані")
     photo_url = (
@@ -35,8 +31,6 @@ async def create_player_handler(message: Message, player: dict) -> Message:
 
 @dp.message_handler(state=Player.nation)
 async def answer_player_nation(message: Message, state: FSMContext) -> Message:
-    logger = logging.getLogger(__name__)
-    logger.info('Handler executed')
     nation = message.text
     user_id = message.from_user.id
     telegram_name = message.from_user.username
@@ -62,8 +56,6 @@ async def answer_player_nation(message: Message, state: FSMContext) -> Message:
 
 @dp.message_handler(state=Player.name)
 async def answer_player_name(message: Message, state: FSMContext) -> Message:
-    logger = logging.getLogger(__name__)
-    logger.info('Handler executed')
     name = message.text
     await state.update_data({"name": name})
     markup = await create_markup("classes", "name", message)
@@ -73,8 +65,6 @@ async def answer_player_name(message: Message, state: FSMContext) -> Message:
 
 @dp.message_handler(state=Player.hero_class)
 async def answer_player_class(message: Message, state: FSMContext) -> Message:
-    logger = logging.getLogger(__name__)
-    logger.info('Handler executed')
     class_name = message.text
     await state.update_data({"hero_class": class_name})
     client: Client = message.bot.get('client')

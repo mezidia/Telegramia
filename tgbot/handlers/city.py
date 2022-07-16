@@ -1,5 +1,3 @@
-import logging
-
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 
@@ -12,8 +10,6 @@ from loader import dp
 
 @dp.message_handler(state=CityObject.city_object)
 async def answer_city_object(message: Message, state: FSMContext, player: dict) -> Message:
-    logger = logging.getLogger(__name__)
-    logger.info('Handler executed')
     text = message.text
     if text == "Назад":
         return await echo(message, state, player)

@@ -1,5 +1,3 @@
-import logging
-
 from aiogram.types import CallbackQuery, Message
 
 from tgbot.models.database import Client
@@ -17,8 +15,6 @@ from loader import dp
 
 @dp.callback_query_handler(buy_callback.filter(characteristic=characteristics))
 async def recover_callback(call: CallbackQuery) -> Message:
-    logger = logging.getLogger(__name__)
-    logger.info('Handler executed')
     user_id = call.from_user.id
     await call.answer()
     await apply_recover(user_id, call, call.data)
@@ -26,8 +22,6 @@ async def recover_callback(call: CallbackQuery) -> Message:
 
 @dp.callback_query_handler(hero_callback.filter(choice="yes"))
 async def accept_registration(call: CallbackQuery, player: dict) -> Message:
-    logger = logging.getLogger(__name__)
-    logger.info('Handler executed')
     await call.answer("Вітаємо, вас зареєстровано!", show_alert=True, cache_time=60)
     await call.message.edit_reply_markup()
     client: Client = call.bot.get('client')
@@ -39,8 +33,6 @@ async def accept_registration(call: CallbackQuery, player: dict) -> Message:
 
 @dp.callback_query_handler(hero_callback.filter(choice="no"))
 async def reject_registration(call: CallbackQuery) -> Message:
-    logger = logging.getLogger(__name__)
-    logger.info('Handler executed')
     await call.answer("Процес реєстрації почнеться знову", show_alert=True, cache_time=60)
     await call.message.edit_reply_markup()
     user_id = call.from_user.id
@@ -53,8 +45,6 @@ async def reject_registration(call: CallbackQuery) -> Message:
 
 @dp.callback_query_handler(text_contains="read")
 async def manual_page_callback(call: CallbackQuery) -> Message:
-    logger = logging.getLogger(__name__)
-    logger.info('Handler executed')
     await call.answer()
     page = int(call.data.split(":")[-1])
     return await call.message.edit_text(help_text[page], reply_markup=create_help_markup(page))
@@ -62,7 +52,5 @@ async def manual_page_callback(call: CallbackQuery) -> Message:
 
 @dp.callback_query_handler(text="close")
 async def close_manual_page(call: CallbackQuery) -> bool:
-    logger = logging.getLogger(__name__)
-    logger.info('Handler executed')
     await call.answer()
     return await call.message.delete()

@@ -1,5 +1,3 @@
-import logging
-
 from aiogram.types import Message
 from aiogram.dispatcher.filters.builtin import CommandStart
 
@@ -10,8 +8,6 @@ from loader import dp
 
 @dp.message_handler(CommandStart(), state="*")
 async def show_start_text(message: Message) -> Message:
-    logger = logging.getLogger(__name__)
-    logger.info('Handler executed')
     text = "Вітаю у текстовій грі <b>Telegramia</b>. Створіть <i>свого героя</i> за допомогою команди /create. Для " \
            "того, щоб дізнатись, як грати, прочитайте інструкцію нище. "
     await message.answer(text)
