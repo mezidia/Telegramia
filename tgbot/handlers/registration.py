@@ -1,6 +1,7 @@
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
+from aiogram.utils.markdown import hitalic
 
 from tgbot.models.database import Client
 from tgbot.misc.system.info import prepare_player_info
@@ -18,7 +19,7 @@ async def create_player_handler(message: Message, player: dict) -> Message:
         "https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_intro.jpg"
     )
     text = (
-        "Вітаємо у магічному світі <i>Telegramia</i>. Цей світ повен пригод, цікавих людей, підступних ворогів, "
+        f"Вітаємо у магічному світі {hitalic('Telegramia')}. Цей світ повен пригод, цікавих людей, підступних ворогів, "
         "великих держав і ще багато чого іншого...Скоріше починай свою подорож. Для початку обери країну, "
         "у яку відправишся, щоб підкорювати цей світ"
     )

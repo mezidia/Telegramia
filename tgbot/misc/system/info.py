@@ -1,3 +1,6 @@
+from aiogram.utils.markdown import hitalic
+
+
 async def prepare_player_info(data):
     items = "пусто"
     if data["items"]:
@@ -5,11 +8,11 @@ async def prepare_player_info(data):
         for item in data["items"]:
             items += f"{item}, "
     text = (
-        f'Ігрове ім\'я: <i>{data["name"]}</i>\n🎖Рівень: <i>{data["level"]}</i>\n🌟Досвід: <i>{data["experience"]}</i>\n❤Здоров\'я: '
-        f'<i>{data["health"]}</i>\nЕнергія: <i>{data["energy"]}</i>\n\n💪Сила: <i>{data["strength"]}</i>\n⚡Спритність: <i>{data["agility"]}</i>\n'
-        f'🎯Інтуїція: <i>{data["intuition"]}</i>\n🎓Інтелект: <i>{data["intelligence"]}</i>\n💟Клас: <i>{data["hero_class"]}</i>\n\n'
-        f'🤝Нація: <i>{data["nation"]}</i>\n💰Гроші: <i>{data["money"]}</i>\n🎒Речі: <i>{items}</i>\n'
-        f'🐺Транспорт: <i>{data["mount"]["name"] if data["mount"] else "немає"}</i>\n'
-        f'\nПоточне місце: <i>{data["current_state"]}</i>'
+        f'Ігрове ім\'я: {hitalic(data["name"])}\n🎖Рівень: {hitalic(data["level"])}\n🌟Досвід: {hitalic(data["experience"])}\n❤Здоров\'я: '
+        f'{hitalic(data["health"])}\nЕнергія: {hitalic(data["energy"])}\n\n💪Сила: {hitalic(data["strength"])}\n⚡Спритність: {hitalic(data["agility"])}\n'
+        f'🎯Інтуїція: {hitalic(data["intuition"])}\n🎓Інтелект: {hitalic(data["intelligence"])}\n💟Клас: {hitalic(data["hero_class"])}\n\n'
+        f'🤝Нація: {hitalic(data["nation"])}\n💰Гроші: {hitalic(data["money"])}\n🎒Речі: {hitalic(items)}\n'
+        f'🐺Транспорт: {hitalic(data["mount"]["name"] if data["mount"] else "немає")}\n'
+        f'\nПоточне місце: {hitalic(data["current_state"])}'
     )
     return text
