@@ -182,9 +182,10 @@ async def show_raid_level(player_info: dict, message: Message):
             "raid_levels",
     ):
         text = (
-            f'Рівень рейду - {raid_level["name"]}\n\n📖{raid_level["description"]}\n\n'
-            f'Буде отримано шкоди - {raid_level["damage"]}\n\n'
-            f'⌚Час взяття підземелля - {raid_level["base_time"]} с'
+            f'Рівень рейду - {hbold(raid_level["name"])}\n'
+            f'📖{hitalic(raid_level["description"])}\n'
+            f'💔Буде отримано шкоди - {hbold(raid_level["damage"])}\n'
+            f'⌚Час взяття підземелля - {hbold(raid_level["base_time"])} с'
         )
         photo_url = f"https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_{raid_level['name']}.jpg"
         return await message.answer_photo(photo_url, text)
@@ -226,8 +227,8 @@ async def enter_raid(player_info: dict, message: Message):
             "players",
         )
         return await message.answer(
-            f"Ви почали захоплення рівня {raid_level['level']} рейду. "
-            f'Повернутись у місто ви можете через {raid_level["base_time"]} секунд'
+            f"Ви почали захоплення рівня {hbold(raid_level['level'])} рейду. "
+            f'Повернутись у місто ви можете через {hbold(raid_level["base_time"])} секунд'
         )
     return await message.answer(
         "У вас недостатньо здоров'я. Поверніться у місто, щоб вилікуватись"
