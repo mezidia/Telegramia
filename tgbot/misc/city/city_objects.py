@@ -1,4 +1,5 @@
 from aiogram.types import Message
+from aiogram.utils.markdown import hitalic, hbold
 
 from tgbot.models.database import Client
 from tgbot.misc.system.checks import check_in_raid, check_in_dungeon, check_health, check_was_in_raid
@@ -149,16 +150,17 @@ async def show_raid(player_info: dict, message: Message):
     config: Config = message.bot.get('config')
     client = Client(config.db.password)
     raid = client.get({"name": player_info["current_state"]}, "raids")
-    text = f'Рейд - {raid["name"]}\n\n📖{raid["description"]}\n\n'
+    text = f'Рейд - {hbold(raid["name"])}\n📖{hitalic(raid["description"])}\n\n'
     raid_levels = client.get_all(
         "raid_levels", {"raid_name": player_info["current_state"]}
     )
     for raid_level in raid_levels:
         text += (
-            f'{raid_level["level"]}. Рівень рейду - {raid_level["name"]}\n\n📖{raid_level["description"]}\n\n'
-            f'Буде отримано шкоди - {raid_level["damage"]}\n\n'
-            f'💵Буде отримано нагороди - {raid_level["treasure"]}\n\n'
-            f'⌚Час взяття підземелля - {raid_level["base_time"]} с\n\n'
+            f'{hbold(raid_level["level"])}. Рівень рейду - {hitalic(raid_level["name"])}\n'
+            f'📖{hitalic(raid_level["description"])}\n'
+            f'💔Буде отримано шкоди - {hbold(raid_level["damage"])}\n'
+            f'💵Буде отримано нагороди - {hbold(raid_level["treasure"])}\n'
+            f'⌚Час взяття підземелля - {hbold(raid_level["base_time"])} с\n\n'
         )
     await message.answer(text)
 
