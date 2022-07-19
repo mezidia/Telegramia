@@ -7,8 +7,7 @@ from tgbot.misc.city.city import show_city_info
 
 
 async def apply_recover(user_id: str, call: CallbackQuery, callback_data: str):
-    config: Config = call.message.bot.get('config')
-    client = Client(config.db.password)
+    client: Client = call.bot.get('client')
     _, value, characteristic, price = callback_data.split(":")
 
     player = client.get({"user_id": user_id}, "players")

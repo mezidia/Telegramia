@@ -10,8 +10,7 @@ from tgbot.states.states import CityObject
 
 
 async def show_city_info(city_name: str, message: Message, state=None) -> Message:
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
+    client: Client = message.bot.get('client')
     await finish_state(state)
     markup: ReplyKeyboardMarkup
     photo_url = ""

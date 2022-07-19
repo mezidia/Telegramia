@@ -17,7 +17,7 @@ from loader import dp
 async def recover_callback(call: CallbackQuery) -> Message:
     user_id = call.from_user.id
     await call.answer()
-    await apply_recover(user_id, call, call.data)
+    return await apply_recover(user_id, call, call.data)
 
 
 @dp.callback_query_handler(hero_callback.filter(choice="yes"))

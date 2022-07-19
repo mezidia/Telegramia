@@ -22,4 +22,4 @@ def level_up(exp: float) -> Tuple[float, float]:
     if exp > 100:
         exp /= 100
         return modf(exp)
-    return (exp, 0)
+    return exp, 0

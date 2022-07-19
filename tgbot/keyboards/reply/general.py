@@ -5,8 +5,7 @@ from tgbot.config import Config
 
 
 async def create_markup(collection_name: str, field_name: str, message: Message) -> ReplyKeyboardMarkup:
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
+    client: Client = message.bot.get('client')
     objects = client.get_all(collection_name)
     markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     buttons = []

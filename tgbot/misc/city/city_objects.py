@@ -16,8 +16,7 @@ from typing import Union, Type
 
 
 async def show_roads(player_info: dict, message: Message) -> Message:
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
+    client: Client = message.bot.get('client')
     if check_in_dungeon(player_info, client) or check_in_raid(player_info, client):
         return await message.answer("Ви все ще проходите завдання, потрібно зачекати")
     roads = client.get_all("roads", {"from_obj": player_info["current_state"]})
@@ -29,10 +28,12 @@ async def show_roads(player_info: dict, message: Message) -> Message:
 
 
 async def create_markup_for_shop(
-        collection_name: str, city_name: str, state: Union[Type[Item], Type[Horse]], message: Message, type_: str = None
-) -> Message:
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
+        collection_name: str,
+        city_name: str,
+        state: Union[Type[Item], Type[Horse]],
+        message: Message,
+        type_: str = None) -> Message:
+    client: Client = message.bot.get('client')
     query = {"city": city_name}
     if type_:
         query["type"] = type_
@@ -69,7 +70,10 @@ async def show_item_types(player_info: dict, message: Message) -> Message:
 
 async def show_horses(player_info: dict, message: Message) -> Message:
     return await create_markup_for_shop(
-        "horses", player_info["current_state"], Horse, message
+        "horses",
+        player_info["current_state"],
+        Horse,
+        message
     )
 
 
@@ -101,8 +105,7 @@ async def enter_tavern(player_info: dict, message: Message):
 
 
 async def show_dungeon(player_info: dict, message: Message):
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
+    client: Client = message.bot.get('client')
     dungeon = client.get({"name": player_info["current_state"]}, "dungeons")
     text = (
         f'🌇Підземелля - {dungeon["name"]}\n\n📖{dungeon["description"]}\n\n'
@@ -114,8 +117,7 @@ async def show_dungeon(player_info: dict, message: Message):
 
 
 async def enter_dungeon(player_info: dict, message: Message):
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
+    client: Client = message.bot.get('client')
     if check_in_dungeon(player_info, client):
         return await message.answer("Ви вже у підземеллі")
     dungeon = client.get({"name": player_info["current_state"]}, "dungeons")
@@ -147,8 +149,7 @@ async def enter_dungeon(player_info: dict, message: Message):
 
 
 async def show_raid(player_info: dict, message: Message):
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
+    client: Client = message.bot.get('client')
     raid = client.get({"name": player_info["current_state"]}, "raids")
     text = f'Рейд - {hbold(raid["name"])}\n📖{hitalic(raid["description"])}\n\n'
     raid_levels = client.get_all(
@@ -166,8 +167,7 @@ async def show_raid(player_info: dict, message: Message):
 
 
 async def show_raid_level(player_info: dict, message: Message):
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
+    client: Client = message.bot.get('client')
     raid = client.get({"name": player_info["current_state"]}, "raids")
     raid_members = raid["members"]
     try:
@@ -193,8 +193,7 @@ async def show_raid_level(player_info: dict, message: Message):
 
 
 async def enter_raid(player_info: dict, message: Message):
-    config: Config = message.bot.get('config')
-    client = Client(config.db.password)
+    client: Client = message.bot.get('client')
     if check_in_raid(player_info, client):
         return await message.answer("Ви вже у підземеллі")
     raid = client.get({"name": player_info["current_state"]}, "raids")
