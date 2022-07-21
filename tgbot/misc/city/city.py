@@ -1,8 +1,8 @@
 from aiogram.types import Message, ReplyKeyboardMarkup
+from aiogram.utils.markdown import hbold
 
 from tgbot.models.database import Client
 from tgbot.misc.system.finish_state import finish_state
-from tgbot.config import Config
 from tgbot.keyboards.reply.city import create_markup as city_markup
 from tgbot.keyboards.reply.dungeon import create_markup as dungeon_markup
 from tgbot.keyboards.reply.raid import create_markup as raid_markup
@@ -27,5 +27,5 @@ async def show_city_info(city_name: str, message: Message, state=None) -> Messag
     # photo_url = 'https://raw.githubusercontent.com/mezgoodle/images/master/telegramia_Брісвель.jpg'
     await CityObject.first()
     return await message.answer_photo(
-        photo_url, f"Ви знаходитесь у місті {city_name}", reply_markup=markup
+        photo_url, f"Ви знаходитесь у місті {hbold(city_name)}", reply_markup=markup
     )
